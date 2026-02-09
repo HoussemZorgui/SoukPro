@@ -72,6 +72,10 @@ const UserSchema = new mongoose.Schema({
         phone: String,
         isDefault: { type: Boolean, default: false }
     }],
+    fcmToken: {
+        type: String,
+        default: ''
+    },
     createdAt: {
         type: Date,
         default: Date.now

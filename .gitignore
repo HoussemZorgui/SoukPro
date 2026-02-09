@@ -35,3 +35,12 @@ Thumbs.db
 
 # Backend Uploads
 backend/uploads/
+*.json
+!package.json
+!package-lock.json
+!composer.json
+!**/google-services.json # If you want to keep them, but GitHub is blocking them. 
+# Better yet, list the specific ones
+backend/firebase-service-account.json
+mobile/android/app/google-services.json
+mobile/ios/Runner/GoogleService-Info.plist

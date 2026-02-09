@@ -45,15 +45,26 @@ class OrderService {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        // Handle case where product might be null if populated incorrectly
         return data.map((json) => Order.fromJson(json)).toList();
       } else {
         throw Exception('Failed to fetch orders');
       }
     } catch (e) {
-       // Log the error for debugging
        print(e);
       throw Exception('Error fetching orders: $e');
+    }
+  }
+
+  Future<void> updateOrderStatus(String orderId, String status) async {
+    try {
+      final token = await _authService.getToken();
+      await _dio.patch(
+        '/orders/$orderId/status',
+        data: {'status': status},
+        options: Options(headers: {'x-auth-token': token}),
+      );
+    } catch (e) {
+      throw Exception('Error updating status: $e');
     }
   }
 }

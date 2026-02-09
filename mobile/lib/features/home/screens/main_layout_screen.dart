@@ -4,6 +4,7 @@ import '../../profile/screens/profile_screen.dart';
 import '../widgets/global_drawer.dart';
 import '../widgets/global_app_bar.dart';
 import 'search_screen.dart';
+import '../../../core/services/notification_service.dart';
 
 class MainLayoutScreen extends StatefulWidget {
   const MainLayoutScreen({super.key});
@@ -14,6 +15,13 @@ class MainLayoutScreen extends StatefulWidget {
 
 class _MainLayoutScreenState extends State<MainLayoutScreen> {
   int _currentIndex = 0;
+  final NotificationService _notificationService = NotificationService();
+
+  @override
+  void initState() {
+    super.initState();
+    _notificationService.initializeNotifications();
+  }
 
   final List<Widget> _screens = [
     const HomeScreen(),

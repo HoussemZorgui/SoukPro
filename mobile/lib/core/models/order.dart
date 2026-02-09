@@ -21,22 +21,32 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     // Handle cases where items might be missing or null
-    final itemsList = (json['items'] as List?)?.map((item) => OrderItem.fromJson(item)).toList() ?? [];
+    final List<OrderItem> itemsList = [];
+    if (json['items'] != null && json['items'] is List) {
+      for (var item in json['items']) {
+        if (item != null && item is Map<String, dynamic>) {
+          itemsList.add(OrderItem.fromJson(item));
+        }
+      }
+    }
     
     // Defensive handling for shippingAddress which might be a String in old orders
     Map<String, dynamic>? address;
     if (json['shippingAddress'] is Map) {
       address = Map<String, dynamic>.from(json['shippingAddress']);
+    } else if (json['shippingAddress'] is String) {
+      // If it's a string, we could optionally wrap it or just leave it null
+      address = {'address': json['shippingAddress']};
     }
 
     return Order(
-      id: json['_id'] ?? '',
-      items: itemsList.cast<OrderItem>(),
+      id: (json['_id'] ?? json['id'] ?? '').toString(),
+      items: itemsList,
       totalAmount: (json['totalAmount'] as num?)?.toDouble() ?? 0.0,
-      status: json['status'] ?? 'pending',
-      paymentMethod: json['paymentMethod'] ?? 'cash_on_delivery',
-      paymentStatus: json['paymentStatus'],
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
+      status: (json['status'] ?? 'pending').toString(),
+      paymentMethod: (json['paymentMethod'] ?? 'cash_on_delivery').toString(),
+      paymentStatus: json['paymentStatus']?.toString(),
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'].toString()) : DateTime.now(),
       shippingAddress: address,
     );
   }

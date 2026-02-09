@@ -8,6 +8,7 @@ import '../providers/shop_provider.dart';
 import 'shop_profile_screen.dart';
 import 'edit_shop_screen.dart';
 import 'manage_products_screen.dart';
+import 'shop_orders_screen.dart';
 import '../../home/screens/add_product_screen.dart';
 import 'location_picker_screen.dart';
 import 'package:latlong2/latlong.dart';
@@ -283,6 +284,9 @@ class _ShopDashboardScreenState extends State<ShopDashboardScreen> {
                       Text('GESTION DU CATALOGUE', 
                         style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF0B1C2D), letterSpacing: 1.2)),
                       const SizedBox(height: 16),
+                      _buildActionTile('Gérer les commandes', 'Suivi et mise à jour des commandes', Icons.receipt_long_rounded, Colors.orange, () {
+                         Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ShopOrdersScreen()));
+                      }),
                       _buildActionTile('Ajouter un produit', 'Publier une nouvelle annonce', Icons.add_rounded, const Color(0xFF0B1C2D), () {
                          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AddProductScreen()));
                       }),

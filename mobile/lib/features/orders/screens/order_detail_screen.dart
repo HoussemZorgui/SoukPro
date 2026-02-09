@@ -1,17 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/models/order.dart';
 import '../../../core/constants/api_constants.dart';
+import '../providers/order_provider.dart';
 import 'package:animate_do/animate_do.dart';
 
-class OrderDetailScreen extends StatelessWidget {
+class OrderDetailScreen extends StatefulWidget {
   final Order order;
+  final bool isSellerView;
 
-  const OrderDetailScreen({super.key, required this.order});
+  const OrderDetailScreen({super.key, required this.order, this.isSellerView = false});
+
+  @override
+  State<OrderDetailScreen> createState() => _OrderDetailScreenState();
+}
+
+class _OrderDetailScreenState extends State<OrderDetailScreen> {
+  String? _selectedStatus;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedStatus = widget.order.status;
+  }
+
+  void _updateStatus(String newStatus) async {
+    final success = await context.read<OrderProvider>().updateOrderStatus(widget.order.id, newStatus);
+    if (success && mounted) {
+      setState(() => _selectedStatus = newStatus);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Statut mis à jour !')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final order = widget.order;
     return Scaffold(
       backgroundColor: const Color(0xFFFBFBFB),
       appBar: AppBar(
@@ -25,13 +50,20 @@ class OrderDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildOrderHeader(),
+            _buildOrderHeader(order),
+            if (widget.isSellerView) ...[
+              const SizedBox(height: 25),
+              _buildStatusPicker(),
+            ] else ...[
+              const SizedBox(height: 25),
+              _buildTrackingVisual(order.status),
+            ],
             const SizedBox(height: 25),
-            _buildItemsList(),
+            _buildItemsList(order),
             const SizedBox(height: 25),
-            _buildAddressSection(),
+            _buildAddressSection(order),
             const SizedBox(height: 25),
-            _buildSummarySection(),
+            _buildSummarySection(order),
             const SizedBox(height: 40),
           ],
         ),
@@ -39,7 +71,54 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderHeader() {
+  Widget _buildStatusPicker() {
+    final statuses = [
+      {'val': 'pending', 'label': 'En attente', 'icon': Icons.timer_outlined},
+      {'val': 'confirmed', 'label': 'Confirmée', 'icon': Icons.check_circle_outline},
+      {'val': 'shipped', 'label': 'En cours de livraison', 'icon': Icons.local_shipping_outlined},
+      {'val': 'delivered', 'label': 'Livrée', 'icon': Icons.home_outlined},
+      {'val': 'cancelled', 'label': 'Annulée', 'icon': Icons.cancel_outlined},
+    ];
+
+    return FadeInUp(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('METTRE À JOUR LE STATUT', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1, color: const Color(0xFF0B1C2D))),
+          const SizedBox(height: 15),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white, 
+              borderRadius: BorderRadius.circular(20), 
+              border: Border.all(color: Colors.grey[200]!),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)],
+            ),
+            child: Column(
+              children: statuses.map((s) {
+                final isSelected = _selectedStatus == s['val'];
+                return ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? const Color(0xFFC9A24D).withOpacity(0.1) : Colors.grey[50],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(s['icon'] as IconData, color: isSelected ? const Color(0xFFC9A24D) : Colors.grey, size: 20),
+                  ),
+                  title: Text(s['label'] as String, style: GoogleFonts.outfit(fontWeight: isSelected ? FontWeight.bold : FontWeight.w500, color: isSelected ? const Color(0xFF0B1C2D) : Colors.grey[700])),
+                  trailing: isSelected ? const Icon(Icons.check_circle, color: Color(0xFFC9A24D), size: 18) : null,
+                  onTap: () => _updateStatus(s['val'] as String),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderHeader(Order order) {
     return FadeInDown(
       child: Container(
         padding: const EdgeInsets.all(20),
@@ -61,7 +140,7 @@ class OrderDetailScreen extends StatelessWidget {
                     Text(order.id.substring(order.id.length - 8).toUpperCase(), style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
                   ],
                 ),
-                _buildStatusBadge(order.status),
+                _buildStatusBadge(_selectedStatus ?? order.status),
               ],
             ),
             const Padding(
@@ -84,7 +163,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildItemsList() {
+  Widget _buildItemsList(Order order) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -137,7 +216,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressSection() {
+  Widget _buildAddressSection(Order order) {
     if (order.shippingAddress == null) return const SizedBox.shrink();
     final addr = order.shippingAddress!;
     
@@ -181,7 +260,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummarySection() {
+  Widget _buildSummarySection(Order order) {
     return FadeInUp(
       delay: const Duration(milliseconds: 200),
       child: Container(
@@ -233,6 +312,81 @@ class OrderDetailScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
       child: Text(text, style: GoogleFonts.outfit(color: color, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+    );
+  }
+
+  Widget _buildTrackingVisual(String status) {
+    final steps = [
+      {'val': 'pending', 'label': 'Confirmé'},
+      {'val': 'confirmed', 'label': 'Préparation'},
+      {'val': 'shipped', 'label': 'Expédié'},
+      {'val': 'delivered', 'label': 'Livré'},
+    ];
+
+    int currentStep = steps.indexWhere((s) => s['val'] == status);
+    if (status == 'cancelled') currentStep = -1;
+
+    return FadeInUp(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.grey[100]!),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('SUIVI EN TEMPS RÉEL', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w900, color: const Color(0xFF0B1C2D), letterSpacing: 1)),
+            const SizedBox(height: 25),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(steps.length, (i) {
+                final isActive = i <= currentStep;
+                final isLast = i == steps.length - 1;
+                
+                return Expanded(
+                  child: Row(
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: isActive ? const Color(0xFFC9A24D) : Colors.grey[200],
+                              shape: BoxShape.circle,
+                              border: isActive ? Border.all(color: const Color(0xFFC9A24D).withOpacity(0.3), width: 4) : null,
+                            ),
+                            child: isActive ? const Icon(Icons.check, color: Colors.white, size: 12) : null,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            steps[i]['label']!,
+                            style: GoogleFonts.outfit(
+                              fontSize: 9, 
+                              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                              color: isActive ? const Color(0xFF0B1C2D) : Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (!isLast)
+                        Expanded(
+                          child: Container(
+                            height: 2,
+                            margin: const EdgeInsets.only(bottom: 22),
+                            color: i < currentStep ? const Color(0xFFC9A24D) : Colors.grey[200],
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

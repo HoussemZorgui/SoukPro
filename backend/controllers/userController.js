@@ -122,3 +122,16 @@ exports.removeAddress = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+// @desc    Update FCM Token
+// @route   PATCH /api/users/fcm-token
+// @access  Private
+exports.updateFcmToken = async (req, res) => {
+    try {
+        const { fcmToken } = req.body;
+        await User.findByIdAndUpdate(req.user.id, { fcmToken });
+        res.json({ msg: 'FCM Token updated' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};

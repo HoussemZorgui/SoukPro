@@ -12,4 +12,8 @@ router.post('/kyc', [auth, upload.array('documents', 3)], uploadKYC);
 router.post('/addresses', auth, addAddress);
 router.delete('/addresses/:addressId', auth, removeAddress);
 
+// FCM Token
+const { updateFcmToken } = require('../controllers/userController');
+router.patch('/fcm-token', auth, updateFcmToken);
+
 module.exports = router;

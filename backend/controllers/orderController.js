@@ -48,6 +48,27 @@ exports.checkout = async (req, res) => {
         });
 
         await order.save();
+
+        // Notify Sellers
+        try {
+            const { sendNotification } = require('../utils/notificationUtils');
+            const sellers = [...new Set(processedItems.map(item => item.seller.toString()))];
+
+            for (const sellerId of sellers) {
+                const seller = await User.findById(sellerId);
+                if (seller && seller.fcmToken) {
+                    await sendNotification(
+                        seller.fcmToken,
+                        'Nouvelle commande reçue !',
+                        `Vous avez reçu une commande pour un ou plusieurs de vos articles.`,
+                        { type: 'new_order', orderId: order.id.toString() }
+                    );
+                }
+            }
+        } catch (notifErr) {
+            console.error('Notification error in checkout:', notifErr.message);
+        }
+
         res.json(order);
     } catch (err) {
         console.error(err.message);
@@ -73,6 +94,55 @@ exports.getMyOrders = async (req, res) => {
             .sort({ createdAt: -1 });
 
         res.json(orders);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+// @desc    Update order status
+// @route   PATCH /api/orders/:id/status
+// @access  Private (Seller/Admin)
+exports.updateOrderStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const order = await Order.findById(req.params.id)
+            .populate('buyer', 'name fcmToken email');
+
+        if (!order) {
+            return res.status(404).json({ msg: 'Order not found' });
+        }
+
+        // Check if the user is a seller for any item in this order
+        const isSeller = order.items.some(item => item.seller.toString() === req.user.id);
+        const isAdmin = req.user.role === 'admin';
+
+        if (!isSeller && !isAdmin) {
+            return res.status(403).json({ msg: 'Not authorized to update this order' });
+        }
+
+        order.status = status;
+        await order.save();
+
+        // Send Real Notification
+        if (order.buyer && order.buyer.fcmToken) {
+            const { sendNotification } = require('../utils/notificationUtils');
+            const statusLabels = {
+                'pending': 'En attente',
+                'confirmed': 'Confirmée',
+                'shipped': 'En cours de livraison',
+                'delivered': 'Livrée',
+                'cancelled': 'Annulée'
+            };
+            const label = statusLabels[status] || status;
+            await sendNotification(
+                order.buyer.fcmToken,
+                'Mise à jour de votre commande',
+                `Le statut de votre commande #${order.id.substring(order.id.length - 6).toUpperCase()} est maintenant : ${label}`,
+                { type: 'order_update', orderId: order.id.toString() }
+            );
+        }
+
+        res.json(order);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

@@ -41,4 +41,20 @@ class OrderProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> updateOrderStatus(String orderId, String status) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _orderService.updateOrderStatus(orderId, status);
+      await fetchOrders(); // Refresh list
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }
