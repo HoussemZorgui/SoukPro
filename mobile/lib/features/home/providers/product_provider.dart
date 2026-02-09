@@ -33,7 +33,7 @@ class ProductProvider with ChangeNotifier {
   List<Product> _searchResults = [];
   List<Product> get searchResults => _searchResults;
 
-  Future<void> searchProducts(String query, {String? category, double? minPrice, double? maxPrice, String? condition}) async {
+  Future<void> searchProducts(String query, {String? category, double? minPrice, double? maxPrice, String? condition, String? status}) async {
     _isLoading = true;
     notifyListeners();
 
@@ -43,7 +43,8 @@ class ProductProvider with ChangeNotifier {
         if (category != null) 'category': category,
         if (minPrice != null) 'minPrice': minPrice,
         if (maxPrice != null) 'maxPrice': maxPrice,
-         if (condition != null) 'condition': condition,
+        if (condition != null) 'condition': condition,
+        if (status != null) 'status': status,
       };
       
       _searchResults = await _productService.getProducts(filters: filters);

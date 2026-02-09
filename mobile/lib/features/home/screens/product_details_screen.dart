@@ -451,73 +451,87 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 20, offset: const Offset(0, -10)),
             ],
           ),
-          child: isAuction
-              ? Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: TextField(
-                        controller: _bidController,
-                        keyboardType: TextInputType.number,
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.w700),
-                        decoration: InputDecoration(
-                          hintText: 'Votre offre (min ${product.currentMake + 1})',
-                          filled: true,
-                          fillColor: Colors.grey[100],
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                        ),
-                      ),
+          child: product.status == 'sold'
+              ? Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      flex: 1,
-                      child: ElevatedButton(
-                        onPressed: _placeBid,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0B1C2D),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        ),
-                        child: Text('OFFRIR', style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: 1.0)),
-                      ),
+                    child: Text(
+                      'CET ARTICLE EST DÉJÀ VENDU',
+                      style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.grey[600], letterSpacing: 1.0),
                     ),
-                  ],
+                  ),
                 )
-              : Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.add_shopping_cart_rounded, color: Color(0xFF0B1C2D)),
-                        onPressed: () {
-                          context.read<CartProvider>().addToCart(product);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${product.title} ajouté au panier'),
-                              action: SnackBarAction(
-                                label: 'VOIR',
-                                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen())),
-                              ),
+              : isAuction
+                  ? Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextField(
+                            controller: _bidController,
+                            keyboardType: TextInputType.number,
+                            style: GoogleFonts.outfit(fontWeight: FontWeight.w700),
+                            decoration: InputDecoration(
+                              hintText: 'Votre offre (min ${product.currentMake + 1})',
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          context.read<CartProvider>().addToCart(product);
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen()));
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0B1C2D),
-                          foregroundColor: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          flex: 1,
+                          child: ElevatedButton(
+                            onPressed: _placeBid,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0B1C2D),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            ),
+                            child: Text('OFFRIR', style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: 1.0)),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.add_shopping_cart_rounded, color: Color(0xFF0B1C2D)),
+                            onPressed: () {
+                              context.read<CartProvider>().addToCart(product);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('${product.title} ajouté au panier'),
+                                  action: SnackBarAction(
+                                    label: 'VOIR',
+                                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen())),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              context.read<CartProvider>().addToCart(product);
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen()));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0B1C2D),
+                              foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                           elevation: 0,

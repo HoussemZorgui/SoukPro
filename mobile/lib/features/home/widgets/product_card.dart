@@ -86,7 +86,7 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (product.paymentType == 'installments')
+                   if (product.paymentType == 'installments')
                     Positioned(
                       top: 12,
                       right: 12,
@@ -104,6 +104,28 @@ class ProductCard extends StatelessWidget {
                             Text('FACILITÉ', 
                               style: GoogleFonts.outfit(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
                           ],
+                        ),
+                      ),
+                    ),
+                  if (product.status == 'sold')
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.4),
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                        ),
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'VENDU',
+                              style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14),
+                            ),
+                          ),
                         ),
                       ),
                     ),

@@ -55,9 +55,16 @@ exports.createProduct = async (req, res) => {
 // @access  Public
 exports.getProducts = async (req, res) => {
     try {
-        const { search, category, minPrice, maxPrice, condition } = req.query;
+        const { search, category, minPrice, maxPrice, condition, status } = req.query;
 
-        let query = { status: 'available' }; // Default to available products
+        let query = {};
+
+        // Default to 'available' if no status is provided
+        if (!status) {
+            query.status = 'available';
+        } else if (status !== 'all') {
+            query.status = status;
+        }
 
         // Search text (Title or Description)
         if (search) {
@@ -65,10 +72,12 @@ exports.getProducts = async (req, res) => {
                 { title: { $regex: search, $options: 'i' } },
                 { description: { $regex: search, $options: 'i' } }
             ];
+            // When searching by text, maybe we want to see sold items too? 
+            // Let's keep the status filter as requested but prioritize available ones in sort
         }
 
         // Category Filter
-        if (category && category !== 'All') {
+        if (category && category !== 'All' && category !== 'Tout') {
             query.category = category;
         }
 
@@ -93,7 +102,11 @@ exports.getProducts = async (req, res) => {
                     select: 'name logo governorate isVerified'
                 }
             })
-            .sort({ isPremium: -1, createdAt: -1 }); // Premium first
+            .sort({
+                status: 1, // 'available' before 'sold'
+                isPremium: -1,
+                createdAt: -1
+            });
         res.json(products);
     } catch (err) {
         console.error(err.message);
