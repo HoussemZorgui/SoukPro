@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:animate_do/animate_do.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/screens/login_screen.dart';
 import '../../shop/screens/shop_dashboard_screen.dart';
@@ -14,110 +16,141 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
 
-    return ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        children: [
-          // Header Section
-          Center(
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            // Ultra-Elegant Header Section
+            FadeInDown(
+              duration: const Duration(milliseconds: 600),
+              child: Center(
+                child: Stack(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFFC9A24D).withOpacity(0.3), width: 2),
                       ),
-                    ],
-                  ),
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.white,
-                    backgroundImage: (user?.avatar != null && user!.avatar!.isNotEmpty)
-                        ? NetworkImage(user.avatar!.startsWith('http') 
-                            ? user.avatar! 
-                            : '${ApiConstants.baseUrl.replaceAll('/api', '')}/${user.avatar!}')
-                        : null,
-                    child: (user?.avatar == null || user!.avatar!.isEmpty)
-                        ? Icon(Icons.person, size: 60, color: Colors.grey[400])
-                        : null,
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 4,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Colors.blueAccent,
-                      shape: BoxShape.circle,
+                      child: CircleAvatar(
+                        radius: 65,
+                        backgroundColor: Colors.grey[50],
+                        backgroundImage: (user?.avatar != null && user!.avatar!.isNotEmpty)
+                            ? NetworkImage(user.avatar!.startsWith('http') 
+                                ? user.avatar! 
+                                : '${ApiConstants.baseUrl.replaceAll('/api', '')}/${user.avatar!}')
+                            : null,
+                        child: (user?.avatar == null || user!.avatar!.isEmpty)
+                            ? Icon(Icons.person_rounded, size: 65, color: Colors.grey[300])
+                            : null,
+                      ),
                     ),
-                    child: const Icon(Icons.check, color: Colors.white, size: 16),
+                    if (user?.role == 'professional')
+                      Positioned(
+                        bottom: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFC9A24D),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.verified_user_rounded, color: Colors.white, size: 20),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            FadeInUp(
+              duration: const Duration(milliseconds: 600),
+              child: Column(
+                children: [
+                  Text(
+                    user?.name ?? 'Utilisateur',
+                    style: GoogleFonts.outfit(
+                      fontSize: 28, 
+                      fontWeight: FontWeight.w800, 
+                      color: const Color(0xFF0B1C2D),
+                      letterSpacing: -0.5
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    user?.email ?? '',
+                    style: GoogleFonts.outfit(
+                      color: Colors.grey[500], 
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 40),
+            
+            // Premium Action Sections
+            FadeInUp(
+              delay: const Duration(milliseconds: 200),
+              child: _buildMenuSection('COMPTE PERSONNALISÉ', [
+                _buildMenuItem(Icons.shopping_bag_outlined, 'Mes commandes', 'Historique et suivi', () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrderHistoryScreen()));
+                }),
+                if (user?.role == 'professional' || user?.role == 'admin')
+                  _buildMenuItem(Icons.storefront_rounded, 'Ma boutique', 'Gestion professionnelle', () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ShopDashboardScreen()));
+                  }, isPremium: true),
+                _buildMenuItem(Icons.person_outline_rounded, 'Éditer le profil', 'Informations personnelles', () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const EditProfileScreen()));
+                }),
+              ]),
+            ),
+            
+            const SizedBox(height: 24),
+            FadeInUp(
+              delay: const Duration(milliseconds: 400),
+              child: _buildMenuSection('CONFIGURATION', [
+                _buildMenuItem(Icons.notifications_none_rounded, 'Notifications', "Préférences d'alerte", () {}),
+                _buildMenuItem(Icons.lock_open_rounded, 'Sécurité', 'Mot de passe et accès', () {}),
+                _buildMenuItem(Icons.help_outline_rounded, 'Support client', "Centre d'aide", () {}),
+              ]),
+            ),
+
+            const SizedBox(height: 48),
+            FadeInUp(
+              delay: const Duration(milliseconds: 600),
+              child: SizedBox(
+                width: double.infinity,
+                child: TextButton.icon(
+                  onPressed: () {
+                    Provider.of<AuthProvider>(context, listen: false).logout();
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  },
+                  icon: const Icon(Icons.logout_rounded, size: 20),
+                  label: Text('Déconnexion', 
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 16)),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red[700],
+                    backgroundColor: Colors.red[50],
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: Text(
-              user?.name ?? 'Invité',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
-            ),
-          ),
-          Center(
-            child: Text(
-              user?.email ?? '',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
-            ),
-          ),
-          const SizedBox(height: 32),
-          
-          // Action Cards
-          _buildMenuSection('COMPTE', [
-            _buildMenuItem(Icons.shopping_bag_outlined, 'Mes Commandes', () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrderHistoryScreen()));
-            }),
-            if (user?.role == 'professional' || user?.role == 'admin')
-              _buildMenuItem(Icons.storefront_outlined, 'Ma Boutique', () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ShopDashboardScreen()));
-              }),
-            _buildMenuItem(Icons.edit_outlined, 'Modifier le Profil', () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const EditProfileScreen()));
-            }),
-          ]),
-          
-          const SizedBox(height: 24),
-          _buildMenuSection('PARAMÈTRES', [
-            _buildMenuItem(Icons.notifications_none_outlined, 'Notifications', () {}),
-            _buildMenuItem(Icons.security_outlined, 'Sécurité', () {}),
-            _buildMenuItem(Icons.help_outline, 'Aide & Support', () {}),
-          ]),
-
-          const SizedBox(height: 32),
-          ElevatedButton.icon(
-            onPressed: () {
-              Provider.of<AuthProvider>(context, listen: false).logout();
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-                (route) => false,
-              );
-            },
-            icon: const Icon(Icons.logout, size: 20),
-            label: const Text('Déconnexion', style: TextStyle(fontWeight: FontWeight.bold)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red[50],
-              foregroundColor: Colors.red,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-          ),
-          const SizedBox(height: 40),
-        ],
-      );
+            const SizedBox(height: 50),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildMenuSection(String title, List<Widget> items) {
@@ -125,44 +158,60 @@ class ProfileScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 12),
+          padding: const EdgeInsets.only(left: 10, bottom: 16),
           child: Text(
             title,
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey[500], letterSpacing: 1.2),
+            style: GoogleFonts.outfit(
+              fontSize: 13, 
+              fontWeight: FontWeight.w800, 
+              color: const Color(0xFF0B1C2D).withOpacity(0.5), 
+              letterSpacing: 1.5
+            ),
           ),
         ),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: Colors.grey[100]!),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
-          child: Column(children: items),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(28),
+            child: Column(children: items),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap) {
+  Widget _buildMenuItem(IconData icon, String title, String subtitle, VoidCallback onTap, {bool isPremium = false}) {
     return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       leading: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.blueAccent.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(10),
+          color: isPremium ? const Color(0xFFC9A24D).withOpacity(0.1) : const Color(0xFF0B1C2D).withOpacity(0.05),
+          borderRadius: BorderRadius.circular(14),
         ),
-        child: Icon(icon, color: Colors.blueAccent, size: 20),
+        child: Icon(icon, color: isPremium ? const Color(0xFFC9A24D) : const Color(0xFF0B1C2D), size: 22),
       ),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-      trailing: const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+      title: Text(title, 
+        style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 16, color: const Color(0xFF0B1C2D))),
+      subtitle: Text(subtitle, 
+        style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey[500], fontWeight: FontWeight.w500)),
+      trailing: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(color: Colors.grey[50], shape: BoxShape.circle),
+        child: const Icon(Icons.chevron_right_rounded, color: Colors.grey, size: 18),
+      ),
       onTap: onTap,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     );
   }
 }

@@ -37,4 +37,14 @@ router.get('/category/:category', getProductsByCategory);
 // @access  Public
 router.get('/seller/:sellerId', getProductsBySeller);
 
+// @route   PATCH /api/products/:id
+// @desc    Update a product
+// @access  Private
+router.patch('/:id', [auth, upload.array('images', 5)], updateProduct);
+
+// @route   DELETE /api/products/:id
+// @desc    Delete a product
+// @access  Private
+router.delete('/:id', auth, deleteProduct);
+
 module.exports = router;

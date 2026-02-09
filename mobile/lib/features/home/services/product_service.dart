@@ -72,4 +72,37 @@ class ProductService {
       throw Exception('Error creating product: $e');
     }
   }
+
+  Future<Product> updateProduct(String id, FormData formData) async {
+    try {
+      final token = await _authService.getToken();
+      final response = await _dio.patch(
+        '/products/$id',
+        data: formData,
+        options: Options(headers: {'x-auth-token': token}),
+      );
+      if (response.statusCode == 200) {
+        return Product.fromJson(response.data);
+      } else {
+        throw Exception('Failed to update product');
+      }
+    } catch (e) {
+      throw Exception('Error updating product: $e');
+    }
+  }
+
+  Future<void> deleteProduct(String id) async {
+    try {
+      final token = await _authService.getToken();
+      final response = await _dio.delete(
+        '/products/$id',
+        options: Options(headers: {'x-auth-token': token}),
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete product');
+      }
+    } catch (e) {
+      throw Exception('Error deleting product: $e');
+    }
+  }
 }

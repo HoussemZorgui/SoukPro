@@ -63,6 +63,15 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    shippingAddresses: [{
+        label: String, // Home, Office, etc.
+        street: String,
+        city: String,
+        governorate: String,
+        zip: String,
+        phone: String,
+        isDefault: { type: Boolean, default: false }
+    }],
     createdAt: {
         type: Date,
         default: Date.now

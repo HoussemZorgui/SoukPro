@@ -80,3 +80,45 @@ exports.uploadKYC = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+// @desc    Add shipping address
+// @route   POST /api/users/addresses
+// @access  Private
+exports.addAddress = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        const { label, street, city, governorate, zip, phone, isDefault } = req.body;
+
+        const newAddress = { label, street, city, governorate, zip, phone, isDefault };
+
+        if (isDefault) {
+            user.shippingAddresses.forEach(addr => addr.isDefault = false);
+        } else if (user.shippingAddresses.length === 0) {
+            newAddress.isDefault = true;
+        }
+
+        user.shippingAddresses.push(newAddress);
+        await user.save();
+        res.json(user.shippingAddresses);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+// @desc    Remove shipping address
+// @route   DELETE /api/users/addresses/:addressId
+// @access  Private
+exports.removeAddress = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        user.shippingAddresses = user.shippingAddresses.filter(
+            addr => addr._id.toString() !== req.params.addressId
+        );
+        await user.save();
+        res.json(user.shippingAddresses);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};

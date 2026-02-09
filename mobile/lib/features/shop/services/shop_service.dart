@@ -136,4 +136,16 @@ class ShopService {
       throw Exception('Failed to fetch reviews');
     }
   }
+
+  Future<Map<String, dynamic>> getShopStats(String shopId) async {
+    try {
+      final response = await _dio.get('/shops/stats/$shopId');
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+      throw Exception('Failed to fetch stats');
+    } catch (e) {
+      throw Exception('Failed to fetch shop stats: $e');
+    }
+  }
 }

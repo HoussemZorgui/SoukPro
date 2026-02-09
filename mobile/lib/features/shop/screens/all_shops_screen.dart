@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:animate_do/animate_do.dart';
 import '../providers/shop_provider.dart';
 import 'shop_profile_screen.dart';
 import '../../../core/constants/api_constants.dart';
@@ -236,11 +238,11 @@ class _AllShopsScreenState extends State<AllShopsScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 15)],
                     ),
                     child: CircleAvatar(
                       radius: 35,
-                      backgroundColor: Colors.grey[100],
+                      backgroundColor: Colors.grey[50],
                       backgroundImage: shop['logo'] != null && shop['logo'].toString().isNotEmpty
                         ? NetworkImage(imageUrl(shop['logo']))
                         : null,
@@ -256,19 +258,22 @@ class _AllShopsScreenState extends State<AllShopsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          shop['name'] ?? 'Boutique',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0B1C2D)),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          shop['name'] ?? '',
+                          style: GoogleFonts.outfit(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF0B1C2D),
+                            letterSpacing: -0.5,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(Icons.location_on, color: Colors.grey, size: 14),
+                            const Icon(Icons.location_on, color: Color(0xFFC9A24D), size: 14),
                             const SizedBox(width: 4),
                             Text(
                               "${shop['governorate'] ?? 'Tunisie'}",
-                              style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                              style: GoogleFonts.outfit(color: Colors.grey[600], fontSize: 13, fontWeight: FontWeight.w500),
                             ),
                           ],
                         ),
@@ -278,7 +283,7 @@ class _AllShopsScreenState extends State<AllShopsScreen> {
                             const Icon(Icons.star, color: Colors.orange, size: 16),
                             const SizedBox(width: 4),
                             Text(
-                              "${shop['rating'] ?? '0.0'}", 
+                              "${shop['rating'] ?? '0.0'}/5", 
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                             ),
                             Text(

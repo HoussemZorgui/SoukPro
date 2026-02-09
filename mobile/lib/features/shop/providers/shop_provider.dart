@@ -141,4 +141,17 @@ class ShopProvider with ChangeNotifier {
       return false;
     }
   }
+
+  Map<String, dynamic>? _shopStats;
+  Map<String, dynamic>? get shopStats => _shopStats;
+
+  Future<void> fetchShopStats(String shopId) async {
+    try {
+      _shopStats = await _shopService.getShopStats(shopId);
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
 }

@@ -27,6 +27,10 @@ router.get('/', getAllShops);
 // @route   GET /api/shops/:id
 // @desc    Get shop by ID
 // @access  Public
-router.get('/:id', getShopById);
+// @route   GET /api/shops/stats/:id
+// @desc    Get shop statistics
+// @access  Public
+const { getShopStats } = require('../controllers/shopController');
+router.get('/stats/:id', getShopStats);
 
 module.exports = router;

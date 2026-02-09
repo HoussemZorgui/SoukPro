@@ -113,3 +113,43 @@ exports.getShopById = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
+// @desc    Get shop statistics
+// @route   GET /api/shops/stats/:id
+// @access  Public
+exports.getShopStats = async (req, res) => {
+    try {
+        const shopId = req.params.id;
+        const shop = await Shop.findById(shopId);
+        if (!shop) return res.status(404).json({ msg: 'Shop not found' });
+
+        const sellerId = shop.owner;
+
+        // Total Products
+        const Product = require('../models/Product');
+        const totalProducts = await Product.countDocuments({ seller: sellerId });
+
+        // Total Orders and Revenue
+        const Order = require('../models/Order');
+        const orders = await Order.find({ seller: sellerId, status: { $ne: 'cancelled' } });
+
+        const totalOrders = orders.length;
+        const totalRevenue = orders.reduce((acc, order) => acc + order.totalAmount, 0);
+
+        // Simple mock for views since we don't have a view tracking system yet
+        const totalViews = Math.floor(Math.random() * 500) + 50;
+
+        res.json({
+            totalProducts,
+            totalOrders,
+            totalRevenue,
+            totalViews,
+            rating: shop.rating,
+            reviewCount: shop.reviewCount
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+};
+

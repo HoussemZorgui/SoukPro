@@ -32,3 +32,6 @@ yarn.lock
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Backend Uploads
+backend/uploads/

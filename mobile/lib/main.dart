@@ -9,6 +9,7 @@ import 'core/theme/app_theme.dart';
 
 import 'features/orders/providers/order_provider.dart';
 import 'features/shop/providers/shop_provider.dart';
+import 'features/cart/providers/cart_provider.dart';
 
 void main() {
   runApp(const SoukProApp());
@@ -25,6 +26,7 @@ class SoukProApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => ShopProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
       child: MaterialApp(
         title: 'SoukPro',

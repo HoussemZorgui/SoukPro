@@ -92,4 +92,45 @@ class ProductProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> updateProduct(String id, FormData formData) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final updatedProduct = await _productService.updateProduct(id, formData);
+      // Update local lists
+      int shopIdx = _shopProducts.indexWhere((p) => p.id == id);
+      if (shopIdx != -1) _shopProducts[shopIdx] = updatedProduct;
+      
+      int mainIdx = _products.indexWhere((p) => p.id == id);
+      if (mainIdx != -1) _products[mainIdx] = updatedProduct;
+      
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> deleteProduct(String id) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _productService.deleteProduct(id);
+      _shopProducts.removeWhere((p) => p.id == id);
+      _products.removeWhere((p) => p.id == id);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../cart/providers/cart_provider.dart';
+import '../../cart/screens/cart_screen.dart';
 
 class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showMenu;
@@ -33,9 +36,33 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
             onPressed: () => Navigator.pop(context),
           ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.shopping_cart_outlined, color: Color(0xFF0B1C2D)),
-          onPressed: () {},
+        Consumer<CartProvider>(
+          builder: (context, cart, _) => Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.shopping_cart_outlined, color: Color(0xFF0B1C2D)),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen())),
+              ),
+              if (cart.itemCount > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFC9A24D),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    child: Text(
+                      '${cart.itemCount}',
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ],
     );

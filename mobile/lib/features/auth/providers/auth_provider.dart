@@ -139,6 +139,18 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<void> refreshUser() async {
+    try {
+      final user = await _authService.getCurrentUser();
+      if (user != null) {
+        _user = user;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error refreshing user: $e');
+    }
+  }
+
   Future<void> logout() async {
     await _authService.deleteToken();
     _user = null;

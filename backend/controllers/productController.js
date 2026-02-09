@@ -85,7 +85,14 @@ exports.getProducts = async (req, res) => {
         }
 
         const products = await Product.find(query)
-            .populate('seller', 'name avatar shop role createdAt')
+            .populate({
+                path: 'seller',
+                select: 'name avatar shop role createdAt',
+                populate: {
+                    path: 'shop',
+                    select: 'name logo governorate isVerified'
+                }
+            })
             .sort({ isPremium: -1, createdAt: -1 }); // Premium first
         res.json(products);
     } catch (err) {
@@ -99,7 +106,14 @@ exports.getProducts = async (req, res) => {
 // @access  Public
 exports.getProductById = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id).populate('seller', 'name email avatar shop role createdAt');
+        const product = await Product.findById(req.params.id).populate({
+            path: 'seller',
+            select: 'name email avatar shop role createdAt',
+            populate: {
+                path: 'shop',
+                select: 'name logo governorate isVerified'
+            }
+        });
         if (!product) {
             return res.status(404).json({ msg: 'Product not found' });
         }
@@ -118,7 +132,16 @@ exports.getProductById = async (req, res) => {
 // @access  Public
 exports.getProductsByCategory = async (req, res) => {
     try {
-        const products = await Product.find({ category: req.params.category }).sort({ createdAt: -1 });
+        const products = await Product.find({ category: req.params.category })
+            .populate({
+                path: 'seller',
+                select: 'name avatar shop role createdAt',
+                populate: {
+                    path: 'shop',
+                    select: 'name logo governorate isVerified'
+                }
+            })
+            .sort({ createdAt: -1 });
         res.json(products);
     } catch (err) {
         console.error(err.message);
@@ -139,15 +162,59 @@ exports.updateProduct = async (req, res) => {
             return res.status(401).json({ msg: 'Not authorized' });
         }
 
-        const fieldsToUpdate = ['title', 'description', 'price', 'category', 'condition', 'status', 'isPremium'];
-        fieldsToUpdate.forEach(field => {
-            if (req.body[field] !== undefined) {
-                product[field] = req.body[field];
+        const { title, description, price, category, condition, status, isPremium, paymentType, installmentOptions } = req.body;
+
+        // Handle image updates
+        let finalImages = [];
+        // If existingImages is passed as a JSON string or array, keep them
+        if (req.body.existingImages) {
+            const existing = typeof req.body.existingImages === 'string' ? JSON.parse(req.body.existingImages) : req.body.existingImages;
+            finalImages = Array.isArray(existing) ? existing : [existing];
+        }
+
+        // Add new uploaded files
+        if (req.files && req.files.length > 0) {
+            const newImagePaths = req.files.map(file => file.path);
+            finalImages = [...finalImages, ...newImagePaths];
+        }
+
+        if (finalImages.length > 0) {
+            product.images = finalImages;
+        }
+
+        if (title) product.title = title;
+        if (description) product.description = description;
+        if (price) product.price = Number(price);
+        if (category) product.category = category;
+        if (condition) product.condition = condition;
+        if (status) product.status = status;
+        if (paymentType) product.paymentType = paymentType;
+
+        if (isPremium !== undefined) {
+            product.isPremium = isPremium === 'true' || isPremium === true;
+        }
+
+        if (installmentOptions) {
+            try {
+                product.installmentOptions = typeof installmentOptions === 'string' ? JSON.parse(installmentOptions) : installmentOptions;
+            } catch (e) {
+                console.error("Error parsing installmentOptions:", e);
+            }
+        }
+
+        await product.save();
+
+        // Populate seller to return full product object
+        const updatedProduct = await Product.findById(product._id).populate({
+            path: 'seller',
+            select: 'name email avatar shop role createdAt',
+            populate: {
+                path: 'shop',
+                select: 'name logo governorate isVerified'
             }
         });
 
-        await product.save();
-        res.json(product);
+        res.json(updatedProduct);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -181,7 +248,16 @@ exports.deleteProduct = async (req, res) => {
 // @access  Public
 exports.getProductsBySeller = async (req, res) => {
     try {
-        const products = await Product.find({ seller: req.params.sellerId }).sort({ createdAt: -1 });
+        const products = await Product.find({ seller: req.params.sellerId })
+            .populate({
+                path: 'seller',
+                select: 'name avatar shop role createdAt',
+                populate: {
+                    path: 'shop',
+                    select: 'name logo governorate isVerified'
+                }
+            })
+            .sort({ createdAt: -1 });
         res.json(products);
     } catch (err) {
         console.error(err.message);
