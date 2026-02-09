@@ -278,11 +278,11 @@ class _AllShopsScreenState extends State<AllShopsScreen> {
                             const Icon(Icons.star, color: Colors.orange, size: 16),
                             const SizedBox(width: 4),
                             Text(
-                              "${shop['rating'] ?? '4.5'}", // Use shop rating from model
+                              "${shop['rating'] ?? '0.0'}", 
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                             ),
                             Text(
-                              " (${shop['reviewCount'] ?? '12'} avis)",
+                              " (${shop['reviewCount'] ?? '0'} avis)",
                               style: TextStyle(color: Colors.grey[500], fontSize: 12),
                             ),
                           ],

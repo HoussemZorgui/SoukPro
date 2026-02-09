@@ -102,4 +102,38 @@ class ShopService {
       throw Exception('Failed to fetch shops: $e');
     }
   }
+
+  Future<Map<String, dynamic>> addReview({
+    required String shopId,
+    required double rating,
+    required String comment,
+  }) async {
+    try {
+      final token = await _authService.getToken();
+      final response = await _dio.post(
+        '/reviews',
+        data: {
+          'shopId': shopId,
+          'rating': rating,
+          'comment': comment,
+        },
+        options: Options(headers: {'x-auth-token': token}),
+      );
+      return response.data;
+    } catch (e) {
+      throw Exception('Failed to add review');
+    }
+  }
+
+  Future<List<dynamic>> getShopReviews(String shopId) async {
+    try {
+      final response = await _dio.get('/reviews/shop/$shopId');
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+      return [];
+    } catch (e) {
+      throw Exception('Failed to fetch reviews');
+    }
+  }
 }

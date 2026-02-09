@@ -31,6 +31,7 @@ app.use('/api/auctions', require('./routes/auctions'));
 app.use('/api/shops', require('./routes/shops'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/reviews', require('./routes/reviews'));
 
 // Make uploads folder static
 app.use('/uploads', express.static('uploads'));

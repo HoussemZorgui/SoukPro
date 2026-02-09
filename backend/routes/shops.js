@@ -24,4 +24,9 @@ router.get('/me', auth, getMyShop);
 // @access  Public
 router.get('/', getAllShops);
 
+// @route   GET /api/shops/:id
+// @desc    Get shop by ID
+// @access  Public
+router.get('/:id', getShopById);
+
 module.exports = router;

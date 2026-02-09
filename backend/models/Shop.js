@@ -55,11 +55,11 @@ const ShopSchema = new mongoose.Schema({
     },
     rating: {
         type: Number,
-        default: 4.5
+        default: 0
     },
     reviewCount: {
         type: Number,
-        default: 10
+        default: 0
     },
     isVerified: {
         type: Boolean,

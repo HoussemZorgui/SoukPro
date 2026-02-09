@@ -7,10 +7,17 @@ class ShopProvider with ChangeNotifier {
   final ShopService _shopService = ShopService();
   
   Map<String, dynamic>? _shop;
+  Map<String, dynamic>? _selectedShop;
   bool _isLoading = false;
   String? _error;
 
   Map<String, dynamic>? get shop => _shop;
+  Map<String, dynamic>? get selectedShop => _selectedShop;
+  
+  void setSelectedShop(Map<String, dynamic> shop) {
+    _selectedShop = shop;
+    notifyListeners();
+  }
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get hasShop => _shop != null;
@@ -91,6 +98,47 @@ class ShopProvider with ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  List<dynamic> _reviews = [];
+  List<dynamic> get reviews => _reviews;
+
+  Future<void> fetchShopReviews(String shopId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      _reviews = await _shopService.getShopReviews(shopId);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> addReview({
+    required String shopId,
+    required double rating,
+    required String comment,
+  }) async {
+    try {
+      final response = await _shopService.addReview(
+        shopId: shopId,
+        rating: rating,
+        comment: comment,
+      );
+      
+      if (response['shop'] != null) {
+        _selectedShop = response['shop'];
+      }
+      
+      // Refresh reviews
+      await fetchShopReviews(shopId);
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
     }
   }
 }
