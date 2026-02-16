@@ -57,6 +57,9 @@ class CartProvider with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  String? _checkoutError;
+  String? get checkoutError => _checkoutError;
+
   Future<void> fetchAddresses() async {
     _isLoading = true;
     notifyListeners();
@@ -104,6 +107,7 @@ class CartProvider with ChangeNotifier {
     required String paymentMethod,
   }) async {
     _isLoading = true;
+    _checkoutError = null;
     notifyListeners();
     try {
       final token = await _authService.getToken();
@@ -124,6 +128,19 @@ class CartProvider with ChangeNotifier {
       return false;
     } catch (e) {
       print('Checkout error: $e');
+      if (e is DioException) {
+        final data = e.response?.data;
+        if (data is Map && data['msg'] != null) {
+          _checkoutError = data['msg'];
+        } else if (data is String) {
+          _checkoutError = data;
+        } else {
+          _checkoutError = 'Erreur serveur (${e.response?.statusCode})';
+        }
+        print('Checkout error details: $data');
+      } else {
+        _checkoutError = 'Une erreur inattendue est survenue';
+      }
       return false;
     } finally {
       _isLoading = false;

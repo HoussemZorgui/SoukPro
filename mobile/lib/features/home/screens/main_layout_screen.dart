@@ -4,7 +4,11 @@ import '../../profile/screens/profile_screen.dart';
 import '../widgets/global_drawer.dart';
 import '../widgets/global_app_bar.dart';
 import 'search_screen.dart';
+import 'notifications_screen.dart';
+import '../../shop/screens/shop_orders_screen.dart';
+import '../../orders/screens/order_loader_screen.dart';
 import '../../../core/services/notification_service.dart';
+import 'dart:async';
 
 class MainLayoutScreen extends StatefulWidget {
   const MainLayoutScreen({super.key});
@@ -16,18 +20,48 @@ class MainLayoutScreen extends StatefulWidget {
 class _MainLayoutScreenState extends State<MainLayoutScreen> {
   int _currentIndex = 0;
   final NotificationService _notificationService = NotificationService();
+  StreamSubscription? _notificationSubscription;
 
   @override
   void initState() {
     super.initState();
-    _notificationService.initializeNotifications();
+    
+    // 1. Attach listener FIRST to ensure we don't miss anything from the stream
+    _notificationSubscription = _notificationService.notificationStream.listen((orderId) {
+      print('MainLayout: Notification stream emitted orderId: "$orderId"');
+      if (orderId == null || orderId.isEmpty || orderId == "null") return;
+
+      if (mounted) {
+        if (orderId == 'GO_TO_NOTIFICATIONS') {
+          setState(() => _currentIndex = 3); // 3 is Notifications tab
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OrderLoaderScreen(orderId: orderId),
+            ),
+          );
+        }
+      }
+    });
+
+    // 2. Then initialize services
+    _notificationService.initializeNotifications().then((_) {
+      _notificationService.checkForMissedNotifications();
+    });
+  }
+
+  @override
+  void dispose() {
+    _notificationSubscription?.cancel();
+    super.dispose();
   }
 
   final List<Widget> _screens = [
     const HomeScreen(),
     const SearchScreen(),
-    const Center(child: Text('Ventes - Bientôt disponible')),
-    const Center(child: Text('Notifications - Bientôt disponible')),
+    const ShopOrdersScreen(),
+    const NotificationsScreen(),
     const ProfileScreen(),
   ];
 

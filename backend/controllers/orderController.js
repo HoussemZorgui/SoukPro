@@ -33,7 +33,27 @@ exports.checkout = async (req, res) => {
             });
 
             // Mark product as sold (Simple logic for now)
-            product.status = 'sold';
+            // Stock check
+            const neededQuantity = item.quantity || 1;
+            const currentStock = (product.stock !== undefined) ? product.stock : 1; // Fallback for legacy
+
+            if (currentStock < neededQuantity) {
+                return res.status(400).json({ msg: `Stock insuffisant pour ${product.title} (Dispo: ${currentStock})` });
+            }
+
+            // Decrement stock
+            if (product.stock !== undefined) {
+                product.stock -= neededQuantity;
+            } else {
+                // Legacy: Just assume it's now sold if it was 1
+                product.stock = 0;
+            }
+
+            // Update status if out of stock
+            if (product.stock === 0) {
+                product.status = 'sold';
+            }
+
             await product.save();
         }
 
@@ -57,11 +77,15 @@ exports.checkout = async (req, res) => {
             for (const sellerId of sellers) {
                 const seller = await User.findById(sellerId);
                 if (seller && seller.fcmToken) {
+                    const buyer = await User.findById(req.user.id);
+                    const oId = order._id.toString();
+                    console.log(`Sending new_order notification to seller ${sellerId} for order ${oId}`);
                     await sendNotification(
                         seller.fcmToken,
-                        'Nouvelle commande reçue !',
-                        `Vous avez reçu une commande pour un ou plusieurs de vos articles.`,
-                        { type: 'new_order', orderId: order.id.toString() }
+                        'Nouvelle commande !',
+                        `${buyer ? buyer.name : 'Un client'} a passé une commande de ${totalAmount} TND.`,
+                        { type: 'new_order', orderId: oId },
+                        sellerId
                     );
                 }
             }
@@ -99,6 +123,36 @@ exports.getMyOrders = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+// @desc    Get order by ID
+// @route   GET /api/orders/:id
+// @access  Private
+exports.getOrderById = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id)
+            .populate('items.product', 'title images price')
+            .populate('buyer', 'name email avatar')
+            .populate('items.seller', 'name email shop role');
+
+        if (!order) {
+            return res.status(404).json({ msg: 'Order not found' });
+        }
+
+        // Allow buyer or seller involved in the order to view it
+        const isBuyer = order.buyer._id.toString() === req.user.id;
+        const isSeller = order.items.some(item => item.seller._id.toString() === req.user.id);
+        const isAdmin = req.user.role === 'admin';
+
+        if (!isBuyer && !isSeller && !isAdmin) {
+            return res.status(403).json({ msg: 'Not authorized' });
+        }
+
+        res.json(order);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
 // @desc    Update order status
 // @route   PATCH /api/orders/:id/status
 // @access  Private (Seller/Admin)
@@ -123,8 +177,17 @@ exports.updateOrderStatus = async (req, res) => {
         order.status = status;
         await order.save();
 
-        // Send Real Notification
-        if (order.buyer && order.buyer.fcmToken) {
+        if (order.buyer) {
+            console.log('--- NOTIFICATION DEBUG ---');
+            console.log(`Current User (Seller): ${req.user.id}`);
+            console.log(`Target User (Buyer): ${order.buyer._id}`);
+            if (order.buyer.fcmToken) {
+                console.log(`Buyer FCM Token: ${order.buyer.fcmToken}`);
+            } else {
+                console.warn('Buyer has NO FCM Token.');
+            }
+            console.log('--------------------------');
+
             const { sendNotification } = require('../utils/notificationUtils');
             const statusLabels = {
                 'pending': 'En attente',
@@ -134,11 +197,14 @@ exports.updateOrderStatus = async (req, res) => {
                 'cancelled': 'Annulée'
             };
             const label = statusLabels[status] || status;
+            const oId = req.params.id;
+            console.log(`Sending order_update notification to buyer ${order.buyer._id} for order ${oId}`);
             await sendNotification(
-                order.buyer.fcmToken,
+                order.buyer.fcmToken, // Can be null/undefined, utils handle it
                 'Mise à jour de votre commande',
-                `Le statut de votre commande #${order.id.substring(order.id.length - 6).toUpperCase()} est maintenant : ${label}`,
-                { type: 'order_update', orderId: order.id.toString() }
+                `Le statut de votre commande #${oId.substring(oId.length - 6).toUpperCase()} est maintenant : ${label}`,
+                { type: 'order_update', orderId: oId },
+                order.buyer._id
             );
         }
 

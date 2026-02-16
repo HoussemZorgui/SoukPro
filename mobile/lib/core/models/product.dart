@@ -7,11 +7,12 @@ class Product {
   final String category;
   final String condition;
   final String type; // 'fixed' or 'auction'
-  final String paymentType; // 'cash' or 'installments' or 'auction'
+  final List<String> paymentType; // 'cash', 'installments', 'auction'
   final List<dynamic>? installmentOptions;
   final DateTime? auctionEndDate;
   final double? startingBid;
   final double currentMake;
+  final int stock;
   final String status;
   final Map<String, dynamic>? seller;
 
@@ -24,12 +25,13 @@ class Product {
     required this.category,
     required this.condition,
     required this.type,
-    this.paymentType = 'cash',
+    this.paymentType = const ['cash'],
     this.installmentOptions,
     this.auctionEndDate,
     this.startingBid,
     this.currentMake = 0.0,
     required this.status,
+    this.stock = 1,
     this.seller,
   });
 
@@ -43,12 +45,15 @@ class Product {
       category: json['category'],
       condition: json['condition'],
       type: json['type'] ?? 'fixed',
-      paymentType: json['paymentType'] ?? 'cash',
+      paymentType: (json['paymentType'] is List)
+          ? List<String>.from(json['paymentType'])
+          : [json['paymentType'] ?? 'cash'],
       installmentOptions: json['installmentOptions'],
       auctionEndDate: json['auctionEndDate'] != null ? DateTime.parse(json['auctionEndDate']) : null,
       startingBid: json['startingBid'] != null ? (json['startingBid'] as num).toDouble() : null,
       currentMake: (json['currentMake'] as num?)?.toDouble() ?? 0.0,
       status: json['status'],
+      stock: (json['stock'] as num?)?.toInt() ?? 1,
       seller: json['seller'] is Map<String, dynamic> ? json['seller'] : null,
     );
   }
@@ -69,6 +74,7 @@ class Product {
       'startingBid': startingBid,
       'currentMake': currentMake,
       'status': status,
+      'stock': stock,
     };
   }
 }

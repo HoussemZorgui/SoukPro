@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { registerUser, loginUser, getMe, googleLogin, verifyEmail } = require('../controllers/authController');
+const { registerUser, loginUser, getMe, googleLogin, verifyCode, resendCode } = require('../controllers/authController');
 
 // @route   POST /api/auth/register
 // @desc    Register user
@@ -18,10 +18,15 @@ router.post('/login', loginUser);
 // @access  Public
 router.post('/google', googleLogin);
 
-// @route   GET /api/auth/verify-email
-// @desc    Verify email address
+// @route   POST /api/auth/verify-code
+// @desc    Verify email address with code
 // @access  Public
-router.get('/verify-email', verifyEmail);
+router.post('/verify-code', verifyCode);
+
+// @route   POST /api/auth/resend-code
+// @desc    Resend verification code
+// @access  Public
+router.post('/resend-code', resendCode);
 
 // @route   GET /api/auth/me
 // @desc    Get current user

@@ -31,7 +31,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   late bool _isPremium;
   
   // Shop specific fields
-  late String _paymentType;
+  late List<String> _paymentType;
   final Map<int, bool> _selectedInstallments = {3: false, 6: false, 12: false};
 
   final List<dynamic> _existingImages = [];
@@ -53,7 +53,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _existingImages.addAll(p.images);
 
     // Initialize payment options
-    _paymentType = p.paymentType;
+    _paymentType = List<String>.from(p.paymentType);
     if (p.installmentOptions != null) {
       for (var opt in (p.installmentOptions as List)) {
         final months = opt['months'];
@@ -87,7 +87,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       final isShop = user?.role == 'professional';
 
       List<Map<String, dynamic>> installmentOptions = [];
-      if (isShop && _paymentType == 'installments') {
+      if (isShop && _paymentType.contains('installments')) {
         final price = double.tryParse(_priceController.text) ?? 0.0;
         if (_selectedInstallments[3]!) installmentOptions.add({'months': 3, 'interestRate': 0, 'totalPrice': price});
         if (_selectedInstallments[6]!) installmentOptions.add({'months': 6, 'interestRate': 5, 'totalPrice': price * 1.05});
@@ -104,7 +104,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         'status': _status,
         'existingImages': jsonEncode(_existingImages),
         if (isShop) 'paymentType': _paymentType,
-        if (isShop && _paymentType == 'installments') 'installmentOptions': jsonEncode(installmentOptions),
+        if (isShop && _paymentType.contains('installments')) 'installmentOptions': jsonEncode(installmentOptions),
       };
 
       if (_newImages.isNotEmpty) {
@@ -261,9 +261,40 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       Text('PAIEMENT', 
                         style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w800, color: const Color(0xFF0B1C2D).withOpacity(0.5), letterSpacing: 1.5)),
                       const SizedBox(height: 16),
-                      _buildDropdown('Mode de paiement', _paymentType, ['cash', 'installments'], (val) => setState(() => _paymentType = val!)),
                       
-                      if (_paymentType == 'installments') ...[
+                      CheckboxListTile(
+                        title: Text('Comptant', style: GoogleFonts.outfit(fontSize: 14)),
+                        value: _paymentType.contains('cash'),
+                        activeColor: const Color(0xFFC9A24D),
+                        contentPadding: EdgeInsets.zero,
+                        onChanged: (val) {
+                          setState(() {
+                            if (val!) {
+                              _paymentType.add('cash');
+                            } else {
+                              _paymentType.remove('cash');
+                            }
+                          });
+                        },
+                      ),
+                      
+                      CheckboxListTile(
+                        title: Text('Facilité de paiement', style: GoogleFonts.outfit(fontSize: 14)),
+                        value: _paymentType.contains('installments'),
+                        activeColor: const Color(0xFFC9A24D),
+                        contentPadding: EdgeInsets.zero,
+                        onChanged: (val) {
+                          setState(() {
+                            if (val!) {
+                              _paymentType.add('installments');
+                            } else {
+                              _paymentType.remove('installments');
+                            }
+                          });
+                        },
+                      ),
+                      
+                      if (_paymentType.contains('installments')) ...[
                         const SizedBox(height: 16),
                         _buildCheckbox('3 Mois (0% Intérêt)', 3),
                         _buildCheckbox('6 Mois (5% Intérêt)', 6),

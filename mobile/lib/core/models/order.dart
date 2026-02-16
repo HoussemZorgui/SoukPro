@@ -8,6 +8,10 @@ class Order {
   final DateTime createdAt;
   final Map<String, dynamic>? shippingAddress;
 
+  final String? buyerId;
+  final String? buyerName;
+  final String? buyerAvatar;
+
   Order({
     required this.id,
     required this.items,
@@ -17,6 +21,9 @@ class Order {
     this.paymentStatus,
     required this.createdAt,
     this.shippingAddress,
+    this.buyerId,
+    this.buyerName,
+    this.buyerAvatar,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -39,6 +46,17 @@ class Order {
       address = {'address': json['shippingAddress']};
     }
 
+    // Handle buyer info
+    final buyer = json['buyer'];
+    String? bId, bName, bAvatar;
+    if (buyer is Map) {
+      bId = buyer['_id']?.toString();
+      bName = buyer['name']?.toString();
+      bAvatar = buyer['avatar']?.toString();
+    } else {
+      bId = buyer?.toString();
+    }
+
     return Order(
       id: (json['_id'] ?? json['id'] ?? '').toString(),
       items: itemsList,
@@ -48,6 +66,9 @@ class Order {
       paymentStatus: json['paymentStatus']?.toString(),
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'].toString()) : DateTime.now(),
       shippingAddress: address,
+      buyerId: bId,
+      buyerName: bName,
+      buyerAvatar: bAvatar,
     );
   }
 }

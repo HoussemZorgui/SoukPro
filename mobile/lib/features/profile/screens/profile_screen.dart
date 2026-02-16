@@ -8,6 +8,7 @@ import '../../shop/screens/shop_dashboard_screen.dart';
 import 'order_history_screen.dart';
 import 'edit_profile_screen.dart';
 import '../../../core/constants/api_constants.dart';
+import '../../../core/utils/responsive.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -20,11 +21,14 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+        padding: EdgeInsets.symmetric(
+          horizontal: Responsive.getWidth(context, 6), 
+          vertical: Responsive.getHeight(context, 3)
+        ),
         child: Column(
           children: [
-            const SizedBox(height: 20),
-            // Ultra-Elegant Header Section
+            SizedBox(height: Responsive.getHeight(context, 2)),
+            // Profile Header
             FadeInDown(
               duration: const Duration(milliseconds: 600),
               child: Center(
@@ -37,7 +41,7 @@ class ProfileScreen extends StatelessWidget {
                         border: Border.all(color: const Color(0xFFC9A24D).withOpacity(0.3), width: 2),
                       ),
                       child: CircleAvatar(
-                        radius: 65,
+                        radius: Responsive.getFontSize(context, 60),
                         backgroundColor: Colors.grey[50],
                         backgroundImage: (user?.avatar != null && user!.avatar!.isNotEmpty)
                             ? NetworkImage(user.avatar!.startsWith('http') 
@@ -45,7 +49,7 @@ class ProfileScreen extends StatelessWidget {
                                 : '${ApiConstants.baseUrl.replaceAll('/api', '')}/${user.avatar!}')
                             : null,
                         child: (user?.avatar == null || user!.avatar!.isEmpty)
-                            ? Icon(Icons.person_rounded, size: 65, color: Colors.grey[300])
+                            ? Icon(Icons.person_rounded, size: Responsive.getFontSize(context, 60), color: Colors.grey[300])
                             : null,
                       ),
                     ),
@@ -59,7 +63,7 @@ class ProfileScreen extends StatelessWidget {
                             color: Color(0xFFC9A24D),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.verified_user_rounded, color: Colors.white, size: 20),
+                          child: Icon(Icons.verified_user_rounded, color: Colors.white, size: Responsive.getFontSize(context, 16)),
                         ),
                       ),
                   ],
@@ -74,7 +78,7 @@ class ProfileScreen extends StatelessWidget {
                   Text(
                     user?.name ?? 'Utilisateur',
                     style: GoogleFonts.outfit(
-                      fontSize: 28, 
+                      fontSize: Responsive.getFontSize(context, 24), 
                       fontWeight: FontWeight.w800, 
                       color: const Color(0xFF0B1C2D),
                       letterSpacing: -0.5
@@ -85,27 +89,27 @@ class ProfileScreen extends StatelessWidget {
                     user?.email ?? '',
                     style: GoogleFonts.outfit(
                       color: Colors.grey[500], 
-                      fontSize: 15,
+                      fontSize: Responsive.getFontSize(context, 14),
                       fontWeight: FontWeight.w500
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: Responsive.getHeight(context, 4)),
             
-            // Premium Action Sections
+            // Menu Sections
             FadeInUp(
               delay: const Duration(milliseconds: 200),
-              child: _buildMenuSection('COMPTE PERSONNALISÉ', [
-                _buildMenuItem(Icons.shopping_bag_outlined, 'Mes commandes', 'Historique et suivi', () {
+              child: _buildMenuSection(context, 'COMPTE PERSONNALISÉ', [
+                _buildMenuItem(context, Icons.shopping_bag_outlined, 'Mes commandes', 'Historique et suivi', () {
                   Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrderHistoryScreen()));
                 }),
                 if (user?.role == 'professional' || user?.role == 'admin')
-                  _buildMenuItem(Icons.storefront_rounded, 'Ma boutique', 'Gestion professionnelle', () {
+                  _buildMenuItem(context, Icons.storefront_rounded, 'Ma boutique', 'Gestion professionnelle', () {
                     Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ShopDashboardScreen()));
                   }, isPremium: true),
-                _buildMenuItem(Icons.person_outline_rounded, 'Éditer le profil', 'Informations personnelles', () {
+                _buildMenuItem(context, Icons.person_outline_rounded, 'Éditer le profil', 'Informations personnelles', () {
                   Navigator.of(context).push(MaterialPageRoute(builder: (_) => const EditProfileScreen()));
                 }),
               ]),
@@ -114,14 +118,14 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 24),
             FadeInUp(
               delay: const Duration(milliseconds: 400),
-              child: _buildMenuSection('CONFIGURATION', [
-                _buildMenuItem(Icons.notifications_none_rounded, 'Notifications', "Préférences d'alerte", () {}),
-                _buildMenuItem(Icons.lock_open_rounded, 'Sécurité', 'Mot de passe et accès', () {}),
-                _buildMenuItem(Icons.help_outline_rounded, 'Support client', "Centre d'aide", () {}),
+              child: _buildMenuSection(context, 'CONFIGURATION', [
+                _buildMenuItem(context, Icons.notifications_none_rounded, 'Notifications', "Préférences d'alerte", () {}),
+                _buildMenuItem(context, Icons.lock_open_rounded, 'Sécurité', 'Mot de passe et accès', () {}),
+                _buildMenuItem(context, Icons.help_outline_rounded, 'Support client', "Centre d'aide", () {}),
               ]),
             ),
 
-            const SizedBox(height: 48),
+            SizedBox(height: Responsive.getHeight(context, 6)),
             FadeInUp(
               delay: const Duration(milliseconds: 600),
               child: SizedBox(
@@ -134,26 +138,26 @@ class ProfileScreen extends StatelessWidget {
                       (route) => false,
                     );
                   },
-                  icon: const Icon(Icons.logout_rounded, size: 20),
-                  label: Text('Déconnexion', 
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 16)),
+                  icon: Icon(Icons.logout_rounded, size: Responsive.getFontSize(context, 18)),
+                  label: Text('DÉCONNEXION', 
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: Responsive.getFontSize(context, 14), letterSpacing: 1)),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red[700],
                     backgroundColor: Colors.red[50],
-                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildMenuSection(String title, List<Widget> items) {
+  Widget _buildMenuSection(BuildContext context, String title, List<Widget> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -162,7 +166,7 @@ class ProfileScreen extends StatelessWidget {
           child: Text(
             title,
             style: GoogleFonts.outfit(
-              fontSize: 13, 
+              fontSize: Responsive.getFontSize(context, 11), 
               fontWeight: FontWeight.w800, 
               color: const Color(0xFF0B1C2D).withOpacity(0.5), 
               letterSpacing: 1.5
@@ -191,25 +195,33 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, String subtitle, VoidCallback onTap, {bool isPremium = false}) {
+  Widget _buildMenuItem(BuildContext context, IconData icon, String title, String subtitle, VoidCallback onTap, {bool isPremium = false}) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: isPremium ? const Color(0xFFC9A24D).withOpacity(0.1) : const Color(0xFF0B1C2D).withOpacity(0.05),
           borderRadius: BorderRadius.circular(14),
         ),
-        child: Icon(icon, color: isPremium ? const Color(0xFFC9A24D) : const Color(0xFF0B1C2D), size: 22),
+        child: Icon(icon, color: isPremium ? const Color(0xFFC9A24D) : const Color(0xFF0B1C2D), size: Responsive.getFontSize(context, 20)),
       ),
       title: Text(title, 
-        style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 16, color: const Color(0xFF0B1C2D))),
+        style: GoogleFonts.outfit(
+          fontWeight: FontWeight.w700, 
+          fontSize: Responsive.getFontSize(context, 15), 
+          color: const Color(0xFF0B1C2D)
+        )),
       subtitle: Text(subtitle, 
-        style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey[500], fontWeight: FontWeight.w500)),
+        style: GoogleFonts.outfit(
+          fontSize: Responsive.getFontSize(context, 11), 
+          color: Colors.grey[500], 
+          fontWeight: FontWeight.w500
+        )),
       trailing: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(color: Colors.grey[50], shape: BoxShape.circle),
-        child: const Icon(Icons.chevron_right_rounded, color: Colors.grey, size: 18),
+        child: Icon(Icons.chevron_right_rounded, color: Colors.grey, size: Responsive.getFontSize(context, 16)),
       ),
       onTap: onTap,
     );

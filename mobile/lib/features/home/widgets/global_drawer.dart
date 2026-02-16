@@ -6,6 +6,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../auth/screens/login_screen.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../shop/screens/all_shops_screen.dart';
+import '../../../core/utils/responsive.dart';
 
 class GlobalDrawer extends StatelessWidget {
   const GlobalDrawer({super.key});
@@ -15,9 +16,12 @@ class GlobalDrawer extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
 
+    double drawerWidth = Responsive.getWidth(context, 85);
+    if (drawerWidth > 350) drawerWidth = 350;
+
     return Drawer(
-      width: MediaQuery.of(context).size.width * 0.85,
-      backgroundColor: const Color(0xFF0B1C2D), // Deep Navy
+      width: drawerWidth,
+      backgroundColor: const Color(0xFF0B1C2D),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(40),
@@ -34,8 +38,9 @@ class GlobalDrawer extends StatelessWidget {
               child: ListView(
                 physics: const BouncingScrollPhysics(),
                 children: [
-                  _buildMenuSection('GENERAL'),
+                  _buildMenuSection(context, 'GENERAL'),
                   _buildDrawerItem(
+                    context: context,
                     index: 0,
                     icon: Icons.storefront_rounded,
                     title: 'Boutiques',
@@ -46,6 +51,7 @@ class GlobalDrawer extends StatelessWidget {
                     },
                   ),
                   _buildDrawerItem(
+                    context: context,
                     index: 1,
                     icon: Icons.local_offer_rounded,
                     title: 'Offres Flash',
@@ -53,6 +59,7 @@ class GlobalDrawer extends StatelessWidget {
                     onTap: () => Navigator.pop(context),
                   ),
                   _buildDrawerItem(
+                    context: context,
                     index: 2,
                     icon: Icons.flash_on_rounded,
                     title: 'Enchères Live',
@@ -60,8 +67,9 @@ class GlobalDrawer extends StatelessWidget {
                     onTap: () => Navigator.pop(context),
                   ),
                   const SizedBox(height: 20),
-                  _buildMenuSection('SUPPORT'),
+                  _buildMenuSection(context, 'SUPPORT'),
                   _buildDrawerItem(
+                    context: context,
                     index: 3,
                     icon: Icons.chat_bubble_outline_rounded,
                     title: 'Réclamations',
@@ -69,6 +77,7 @@ class GlobalDrawer extends StatelessWidget {
                     onTap: () => Navigator.pop(context),
                   ),
                   _buildDrawerItem(
+                    context: context,
                     index: 4,
                     icon: Icons.help_outline_rounded,
                     title: 'Centre d\'aide',
@@ -76,6 +85,7 @@ class GlobalDrawer extends StatelessWidget {
                     onTap: () => Navigator.pop(context),
                   ),
                   _buildDrawerItem(
+                    context: context,
                     index: 5,
                     icon: Icons.info_outline_rounded,
                     title: 'À propos de nous',
@@ -93,17 +103,15 @@ class GlobalDrawer extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, dynamic user) {
+    double avatarRadius = Responsive.getFontSize(context, 40);
+    if (avatarRadius > 50) avatarRadius = 50;
+
     return FadeInDown(
       duration: const Duration(milliseconds: 600),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(25, 60, 25, 30),
+        padding: EdgeInsets.fromLTRB(25, Responsive.getHeight(context, 8), 25, 30),
         decoration: const BoxDecoration(
           color: Color(0xFF0B1C2D),
-          image: DecorationImage(
-            image: NetworkImage('https://www.transparenttextures.com/patterns/carbon-fibre.png'),
-            opacity: 0.1,
-            repeat: ImageRepeat.repeat,
-          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -119,7 +127,7 @@ class GlobalDrawer extends StatelessWidget {
                 ],
               ),
               child: CircleAvatar(
-                radius: 42,
+                radius: avatarRadius,
                 backgroundColor: Colors.white12,
                 backgroundImage: (user?.avatar != null && user!.avatar!.isNotEmpty)
                   ? NetworkImage(user.avatar!.startsWith('http')
@@ -127,7 +135,7 @@ class GlobalDrawer extends StatelessWidget {
                     : '${ApiConstants.baseUrl.replaceAll('/api', '')}/${user.avatar!}')
                   : null,
                 child: (user?.avatar == null || user!.avatar!.isEmpty)
-                  ? const Icon(Icons.person, size: 40, color: Colors.white)
+                  ? Icon(Icons.person, size: avatarRadius * 0.8, color: Colors.white)
                   : null,
               ),
             ),
@@ -138,7 +146,7 @@ class GlobalDrawer extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.outfit(
                 color: Colors.white,
-                fontSize: 24,
+                fontSize: Responsive.getFontSize(context, 22),
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.5,
               ),
@@ -147,8 +155,8 @@ class GlobalDrawer extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 10,
-                  height: 10,
+                  width: 8,
+                  height: 8,
                   decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle),
                 ),
                 const SizedBox(width: 8),
@@ -159,7 +167,7 @@ class GlobalDrawer extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.outfit(
                       color: Colors.white60,
-                      fontSize: 13,
+                      fontSize: Responsive.getFontSize(context, 12),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -172,7 +180,7 @@ class GlobalDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuSection(String title) {
+  Widget _buildMenuSection(BuildContext context, String title) {
     return FadeIn(
       delay: const Duration(milliseconds: 300),
       child: Padding(
@@ -181,7 +189,7 @@ class GlobalDrawer extends StatelessWidget {
           title,
           style: GoogleFonts.outfit(
             color: const Color(0xFFC9A24D).withOpacity(0.7),
-            fontSize: 11,
+            fontSize: Responsive.getFontSize(context, 10),
             fontWeight: FontWeight.w800,
             letterSpacing: 2,
           ),
@@ -191,6 +199,7 @@ class GlobalDrawer extends StatelessWidget {
   }
 
   Widget _buildDrawerItem({
+    required BuildContext context,
     required int index,
     required IconData icon,
     required String title,
@@ -228,7 +237,7 @@ class GlobalDrawer extends StatelessWidget {
                       color: Colors.white.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(icon, color: const Color(0xFFC9A24D), size: 22),
+                    child: Icon(icon, color: const Color(0xFFC9A24D), size: Responsive.getFontSize(context, 20)),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -239,7 +248,7 @@ class GlobalDrawer extends StatelessWidget {
                           title,
                           style: GoogleFonts.outfit(
                             color: Colors.white,
-                            fontSize: 15,
+                            fontSize: Responsive.getFontSize(context, 14),
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -247,13 +256,13 @@ class GlobalDrawer extends StatelessWidget {
                           subtitle,
                           style: GoogleFonts.outfit(
                             color: Colors.white38,
-                            fontSize: 11,
+                            fontSize: Responsive.getFontSize(context, 10),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Colors.white.withOpacity(0.2)),
+                  Icon(Icons.arrow_forward_ios_rounded, size: 10, color: Colors.white.withOpacity(0.2)),
                 ],
               ),
             ),
@@ -266,7 +275,7 @@ class GlobalDrawer extends StatelessWidget {
   Widget _buildFooter(BuildContext context, AuthProvider auth) {
     return FadeInUp(
       child: Container(
-        padding: const EdgeInsets.all(25),
+        padding: EdgeInsets.fromLTRB(25, 20, 25, Responsive.isSmallPortrait(context) ? 20 : 40),
         decoration: BoxDecoration(
           border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
         ),
@@ -278,7 +287,7 @@ class GlobalDrawer extends StatelessWidget {
               'SOUKPRO v2.0.4',
               style: GoogleFonts.outfit(
                 color: Colors.white24,
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1,
               ),
@@ -293,7 +302,8 @@ class GlobalDrawer extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         auth.logout();
-        Navigator.of(context).pushAndRemoveUntil(
+        Navigator.pushAndRemoveUntil(
+          context,
           MaterialPageRoute(builder: (_) => const LoginScreen()),
           (route) => false,
         );
@@ -315,7 +325,7 @@ class GlobalDrawer extends StatelessWidget {
               style: GoogleFonts.outfit(
                 color: Colors.redAccent,
                 fontWeight: FontWeight.w800,
-                fontSize: 13,
+                fontSize: Responsive.getFontSize(context, 12),
                 letterSpacing: 1,
               ),
             ),

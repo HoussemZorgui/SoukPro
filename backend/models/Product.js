@@ -35,11 +35,11 @@ const ProductSchema = new mongoose.Schema({
         enum: ['fixed', 'auction'],
         default: 'fixed'
     },
-    paymentType: {
+    paymentType: [{
         type: String,
         enum: ['cash', 'installments', 'auction'],
         default: 'cash'
-    },
+    }],
     installmentOptions: [{
         months: { type: Number },
         interestRate: { type: Number },
@@ -60,6 +60,11 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         enum: ['available', 'sold', 'pending'],
         default: 'available'
+    },
+    stock: {
+        type: Number,
+        default: 1, // Default quantity
+        min: 0
     },
     isPremium: {
         type: Boolean,

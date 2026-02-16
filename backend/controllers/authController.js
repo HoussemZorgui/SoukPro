@@ -2,7 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
-const { sendVerificationEmail } = require('../services/emailService');
+const { sendVerificationEmail, sendWelcomeEmail } = require('../services/emailService');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -16,8 +16,6 @@ const generateToken = (userId) => {
 };
 
 // @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
 exports.registerUser = async (req, res) => {
     const { name, email, password, role, phone } = req.body;
 
@@ -25,7 +23,7 @@ exports.registerUser = async (req, res) => {
         let user = await User.findOne({ email });
 
         if (user) {
-            return res.status(400).json({ msg: 'User already exists' });
+            return res.status(400).json({ msg: 'L\'utilisateur existe déjà' });
         }
 
         user = new User({
@@ -33,41 +31,35 @@ exports.registerUser = async (req, res) => {
             email,
             password,
             role,
-            phone
+            phone,
+            isVerified: false
         });
 
         // Encrypt password
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
 
-        // Generate verification token (simple JWT or random string)
-        const verificationToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        user.verificationToken = verificationToken; // Note: Need to add this to model if not there
+        // Generate 6-digit verification code
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        user.verificationCode = verificationCode;
+        user.verificationCodeExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
         await user.save();
 
         // Send confirmation email
-        await sendVerificationEmail(email, name, verificationToken);
-
-        const token = generateToken(user.id);
-
-        const userResponse = user.toObject();
-        delete userResponse.password;
+        await sendVerificationEmail(email, name, verificationCode);
 
         res.json({
-            token,
-            user: userResponse,
-            msg: 'Registration successful. Please check your email to verify your account.'
+            email: user.email,
+            msg: 'Inscription réussie. Veuillez entrer le code envoyé à votre e-mail.'
         });
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        res.status(500).send('Erreur serveur');
     }
 };
 
 // @desc    Auth user & get token
-// @route   POST /api/auth/login
-// @access  Public
 exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -75,24 +67,34 @@ exports.loginUser = async (req, res) => {
         let user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(400).json({ msg: 'Invalid Credentials' });
+            return res.status(400).json({ msg: 'Identifiants invalides' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.status(400).json({ msg: 'Invalid Credentials' });
+            return res.status(400).json({ msg: 'Identifiants invalides' });
+        }
+
+        // Check verification status
+        if (!user.isVerified) {
+            return res.status(401).json({
+                msg: 'Votre compte n\'est pas encore vérifié.',
+                notVerified: true,
+                email: user.email
+            });
         }
 
         const token = generateToken(user.id);
 
         const userResponse = user.toObject();
         delete userResponse.password;
+        delete userResponse.verificationCode;
 
         res.json({ token, user: userResponse });
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+        res.status(500).send('Erreur serveur');
     }
 };
 
@@ -142,24 +144,80 @@ exports.googleLogin = async (req, res) => {
     }
 };
 
-// @desc    Verify email
-// @route   GET /api/auth/verify-email
-// @access  Public
-exports.verifyEmail = async (req, res) => {
-    const { token } = req.query;
+// @desc    Verify email with code
+// @route   POST /api/auth/verify-code
+exports.verifyCode = async (req, res) => {
+    const { email, code } = req.body;
 
     try {
-        const user = await User.findOne({ verificationToken: token });
+        const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(400).send('<h1>Lien invalide</h1><p>Le jeton de vérification est invalide ou a expiré.</p>');
+            return res.status(404).json({ msg: 'Utilisateur non trouvé' });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({ msg: 'Le compte est déjà vérifié' });
+        }
+
+        if (user.verificationCode !== code) {
+            return res.status(400).json({ msg: 'Code incorrect' });
+        }
+
+        if (user.verificationCodeExpires < Date.now()) {
+            return res.status(400).json({ msg: 'Le code a expiré. Veuillez en demander un nouveau.' });
         }
 
         user.isVerified = true;
-        user.verificationToken = undefined;
+        user.verificationCode = undefined;
+        user.verificationCodeExpires = undefined;
         await user.save();
 
-        res.send('<h1>Compte vérifié !</h1><p>Votre compte SoukPro a été activé avec succès. Vous pouvez maintenant fermer cette page et vous connecter sur l\'application.</p>');
+        const token = generateToken(user.id);
+        const userResponse = user.toObject();
+        delete userResponse.password;
+
+        // Send Welcome Email
+        await sendWelcomeEmail(user.email, user.name);
+
+        res.json({
+            token,
+            user: userResponse,
+            msg: 'Compte vérifié avec succès !'
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Erreur serveur');
+    }
+};
+
+// @desc    Resend verification code
+// @route   POST /api/auth/resend-code
+exports.resendCode = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ msg: 'Utilisateur non trouvé' });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({ msg: 'Le compte est déjà vérifié' });
+        }
+
+        // Generate new 6-digit verification code
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        user.verificationCode = verificationCode;
+        user.verificationCodeExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        await user.save();
+
+        // Send confirmation email
+        await sendVerificationEmail(user.email, user.name, verificationCode);
+
+        res.json({ msg: 'Un nouveau code a été envoyé à votre e-mail.' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Erreur serveur');

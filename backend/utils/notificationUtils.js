@@ -14,8 +14,32 @@ if (fs.existsSync(serviceAccountPath)) {
     console.warn('Push notifications will NOT be sent.');
 }
 
-const sendNotification = async (fcmToken, title, body, data = {}) => {
+const Notification = require('../models/Notification');
+
+const sendNotification = async (fcmToken, title, body, data = {}, userId = null) => {
+    // 1. Save to Database if userId is provided
+    if (userId) {
+        try {
+            await Notification.create({
+                recipient: userId,
+                title,
+                body,
+                data
+            });
+            console.log(`Notification saved for user ${userId}`);
+        } catch (dbError) {
+            console.error('Error saving notification to DB:', dbError);
+        }
+    }
+
+    // 2. Send Push Notification via Firebase
     if (!admin.apps.length) return;
+
+    // Check if token is valid (not empty)
+    if (!fcmToken || fcmToken.trim() === '') {
+        console.warn(`No FCM token for user ${userId}, skipping push notification.`);
+        return;
+    }
 
     const message = {
         notification: { title, body },
@@ -25,10 +49,10 @@ const sendNotification = async (fcmToken, title, body, data = {}) => {
 
     try {
         const response = await admin.messaging().send(message);
-        console.log('Successfully sent message:', response);
+        console.log('Successfully sent push message:', response);
         return response;
     } catch (error) {
-        console.error('Error sending message:', error);
+        console.error('Error sending push message:', error);
     }
 };
 

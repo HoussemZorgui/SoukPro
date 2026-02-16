@@ -135,3 +135,16 @@ exports.updateFcmToken = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+// @desc    Remove FCM Token (Logout)
+// @route   DELETE /api/users/fcm-token
+// @access  Private
+exports.removeFcmToken = async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.user.id, { fcmToken: '' });
+        res.json({ msg: 'FCM Token removed' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};

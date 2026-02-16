@@ -67,4 +67,31 @@ class OrderService {
       throw Exception('Error updating status: $e');
     }
   }
+
+  Future<Order> getOrderById(String orderId) async {
+    if (orderId.trim().isEmpty) {
+      throw Exception('Order ID cannot be empty');
+    }
+    
+    try {
+      final token = await _authService.getToken();
+      print('Fetching order details for ID: $orderId');
+      
+      final response = await _dio.get(
+        '/orders/$orderId',
+        options: Options(headers: {'x-auth-token': token}),
+      );
+
+      print('Order fetch response status: ${response.statusCode}');
+      print('Order fetch response type: ${response.data.runtimeType}');
+
+      if (response.statusCode == 200) {
+        return Order.fromJson(response.data);
+      } else {
+        throw Exception('Failed to fetch order');
+      }
+    } catch (e) {
+      throw Exception('Error fetching order: $e');
+    }
+  }
 }

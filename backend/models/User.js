@@ -63,6 +63,14 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    verificationCode: {
+        type: String,
+        required: false
+    },
+    verificationCodeExpires: {
+        type: Date,
+        required: false
+    },
     shippingAddresses: [{
         label: String, // Home, Office, etc.
         street: String,

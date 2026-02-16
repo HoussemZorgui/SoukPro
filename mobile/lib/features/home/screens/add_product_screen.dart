@@ -18,11 +18,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
+  final _stockController = TextEditingController(text: '1');
   
   String _category = 'Électronique';
   String _condition = 'Neuf';
   String _type = 'fixed'; // fixed or auction
-  String _paymentType = 'cash'; // cash or installments
+  List<String> _selectedPaymentTypes = ['cash']; // can contain 'cash', 'installments'
   final Map<int, bool> _selectedInstallments = {3: false, 6: false, 12: false};
   bool _isPremium = false;
   
@@ -51,7 +52,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     final isShop = user?.role == 'professional';
 
     List<Map<String, dynamic>> installmentOptions = [];
-    if (isShop && _paymentType == 'installments') {
+    if (isShop && _selectedPaymentTypes.contains('installments')) {
       final price = double.tryParse(_priceController.text) ?? 0.0;
       if (_selectedInstallments[3]!) installmentOptions.add({'months': 3, 'interestRate': 0, 'totalPrice': price});
       if (_selectedInstallments[6]!) installmentOptions.add({'months': 6, 'interestRate': 5, 'totalPrice': price * 1.05});
@@ -68,10 +69,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
       'title': _titleController.text,
       'description': _descriptionController.text,
       'price': _priceController.text,
+      'stock': _stockController.text,
       'category': _category,
       'condition': _condition,
       'type': isShop ? 'fixed' : _type,
-      'paymentType': isShop ? _paymentType : 'cash',
+      'paymentType': isShop ? _selectedPaymentTypes : ['cash'],
       'installmentOptions': installmentOptions.isNotEmpty ? installmentOptions : null,
       'isPremium': _isPremium,
       'startingBid': !isShop && _type == 'auction' ? _priceController.text : null,
@@ -202,6 +204,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
                        validator: (val) => val!.isEmpty ? 'Entrez le prix' : null,
                     ),
                      const SizedBox(height: 16),
+                    
+                    TextFormField(
+                      controller: _stockController,
+                       decoration: _inputDecoration('Quantité en stock', Icons.inventory),
+                      keyboardType: TextInputType.number,
+                       validator: (val) => val!.isEmpty ? 'Entrez la quantité' : null,
+                    ),
+                     const SizedBox(height: 16),
       
                     TextFormField(
                       controller: _descriptionController,
@@ -251,16 +261,34 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              DropdownButtonFormField(
-                                value: _paymentType,
-                                items: [
-                                  const DropdownMenuItem(value: 'cash', child: Text('Comptant')),
-                                  const DropdownMenuItem(value: 'installments', child: Text('Facilité de paiement')),
-                                ],
-                                onChanged: (val) => setState(() => _paymentType = val.toString()),
-                                decoration: _inputDecoration('Mode de paiement', Icons.payments_outlined),
+                              const Text('Modes de paiement acceptés :', style: TextStyle(fontWeight: FontWeight.bold)),
+                              CheckboxListTile(
+                                title: const Text('Comptant'),
+                                value: _selectedPaymentTypes.contains('cash'),
+                                onChanged: (val) {
+                                  setState(() {
+                                    if (val!) {
+                                      _selectedPaymentTypes.add('cash');
+                                    } else {
+                                      _selectedPaymentTypes.remove('cash');
+                                    }
+                                  });
+                                },
                               ),
-                              if (_paymentType == 'installments') ...[
+                              CheckboxListTile(
+                                title: const Text('Facilité de paiement'),
+                                value: _selectedPaymentTypes.contains('installments'),
+                                onChanged: (val) {
+                                  setState(() {
+                                    if (val!) {
+                                      _selectedPaymentTypes.add('installments');
+                                    } else {
+                                      _selectedPaymentTypes.remove('installments');
+                                    }
+                                  });
+                                },
+                              ),
+                              if (_selectedPaymentTypes.contains('installments')) ...[
                                 const SizedBox(height: 16),
                                 const Text('Sélectionnez les plans de paiement :', style: TextStyle(fontWeight: FontWeight.bold)),
                                 CheckboxListTile(

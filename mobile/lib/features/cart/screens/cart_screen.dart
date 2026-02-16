@@ -5,6 +5,7 @@ import 'package:animate_do/animate_do.dart';
 import '../providers/cart_provider.dart';
 import '../../../core/constants/api_constants.dart';
 import 'address_list_screen.dart';
+import '../../../core/utils/responsive.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -15,7 +16,11 @@ class CartScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Mon Panier', 
-          style: GoogleFonts.outfit(color: const Color(0xFF0B1C2D), fontWeight: FontWeight.w800)),
+          style: GoogleFonts.outfit(
+            color: const Color(0xFF0B1C2D), 
+            fontWeight: FontWeight.w800,
+            fontSize: Responsive.getFontSize(context, 20)
+          )),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF0B1C2D)),
@@ -34,10 +39,17 @@ class CartScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.shopping_cart_outlined, size: 100, color: Colors.grey[200]),
+                    Icon(Icons.shopping_cart_outlined, 
+                      size: Responsive.getWidth(context, 30), 
+                      color: Colors.grey[200]
+                    ),
                     const SizedBox(height: 24),
                     Text('Votre panier est vide', 
-                      style: GoogleFonts.outfit(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.w600)),
+                      style: GoogleFonts.outfit(
+                        fontSize: Responsive.getFontSize(context, 18), 
+                        color: Colors.grey[600], 
+                        fontWeight: FontWeight.w600
+                      )),
                     const SizedBox(height: 32),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context),
@@ -46,7 +58,11 @@ class CartScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                       ),
-                      child: Text('Commencer mes achats', style: GoogleFonts.outfit(color: Colors.white)),
+                      child: Text('Commencer mes achats', 
+                        style: GoogleFonts.outfit(
+                          color: Colors.white,
+                          fontSize: Responsive.getFontSize(context, 14)
+                        )),
                     ),
                   ],
                 ),
@@ -85,6 +101,9 @@ class CartScreen extends StatelessWidget {
             : '${ApiConstants.baseUrl.replaceAll('/api', '')}/${product.images.first}')
         : '';
 
+    double imgSize = Responsive.getWidth(context, 22);
+    if (imgSize > 100) imgSize = 100;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
@@ -101,8 +120,8 @@ class CartScreen extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: imageUrl.isNotEmpty
-                ? Image.network(imageUrl, width: 90, height: 90, fit: BoxFit.cover)
-                : Container(width: 90, height: 90, color: Colors.grey[50], child: const Icon(Icons.image_not_supported)),
+                ? Image.network(imageUrl, width: imgSize, height: imgSize, fit: BoxFit.cover)
+                : Container(width: imgSize, height: imgSize, color: Colors.grey[50], child: const Icon(Icons.image_not_supported)),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -112,10 +131,17 @@ class CartScreen extends StatelessWidget {
                 Text(product.title, 
                   maxLines: 1, 
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16)),
+                  style: GoogleFonts.outfit(
+                    fontWeight: FontWeight.bold, 
+                    fontSize: Responsive.getFontSize(context, 16)
+                  )),
                 const SizedBox(height: 4),
                 Text('${product.price} TND', 
-                  style: GoogleFonts.outfit(color: const Color(0xFFC9A24D), fontWeight: FontWeight.w800, fontSize: 15)),
+                  style: GoogleFonts.outfit(
+                    color: const Color(0xFFC9A24D), 
+                    fontWeight: FontWeight.w800, 
+                    fontSize: Responsive.getFontSize(context, 15)
+                  )),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -127,17 +153,21 @@ class CartScreen extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          _buildQtyBtn(Icons.remove, () => context.read<CartProvider>().decrementQuantity(product.id)),
+                          _buildQtyBtn(context, Icons.remove, () => context.read<CartProvider>().decrementQuantity(product.id)),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Text('${item.quantity}', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                            child: Text('${item.quantity}', 
+                              style: GoogleFonts.outfit(
+                                fontWeight: FontWeight.bold,
+                                fontSize: Responsive.getFontSize(context, 14)
+                              )),
                           ),
-                          _buildQtyBtn(Icons.add, () => context.read<CartProvider>().addToCart(product)),
+                          _buildQtyBtn(context, Icons.add, () => context.read<CartProvider>().addToCart(product)),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.grey),
+                      icon: const Icon(Icons.delete_outline, color: Colors.grey, size: 20),
                       onPressed: () => context.read<CartProvider>().removeFromCart(product.id),
                     ),
                   ],
@@ -150,19 +180,19 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildQtyBtn(IconData icon, VoidCallback onTap) {
+  Widget _buildQtyBtn(BuildContext context, IconData icon, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(8),
-        child: Icon(icon, size: 16, color: const Color(0xFF0B1C2D)),
+        child: Icon(icon, size: Responsive.getFontSize(context, 16), color: const Color(0xFF0B1C2D)),
       ),
     );
   }
 
   Widget _buildSummary(BuildContext context, dynamic cart) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+      padding: EdgeInsets.fromLTRB(24, 24, 24, Responsive.isSmallPortrait(context) ? 24 : 40),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
@@ -175,9 +205,17 @@ class CartScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Total', style: GoogleFonts.outfit(fontSize: 18, color: Colors.grey)),
+              Text('Total', 
+                style: GoogleFonts.outfit(
+                  fontSize: Responsive.getFontSize(context, 18), 
+                  color: Colors.grey
+                )),
               Text('${cart.totalAmount.toStringAsFixed(2)} TND', 
-                style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w900, color: const Color(0xFF0B1C2D))),
+                style: GoogleFonts.outfit(
+                  fontSize: Responsive.getFontSize(context, 24), 
+                  fontWeight: FontWeight.w900, 
+                  color: const Color(0xFF0B1C2D)
+                )),
             ],
           ),
           const SizedBox(height: 24),
@@ -187,12 +225,16 @@ class CartScreen extends StatelessWidget {
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AddressListScreen())),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0B1C2D),
-                padding: const EdgeInsets.symmetric(vertical: 20),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 elevation: 0,
               ),
               child: Text('Continuer vers le paiement', 
-                style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
+                style: GoogleFonts.outfit(
+                  fontSize: Responsive.getFontSize(context, 16), 
+                  fontWeight: FontWeight.w800, 
+                  color: Colors.white
+                )),
             ),
           ),
         ],

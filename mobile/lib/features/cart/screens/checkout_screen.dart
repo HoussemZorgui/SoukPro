@@ -29,6 +29,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         MaterialPageRoute(builder: (_) => const OrderSuccessScreen()),
         (route) => route.isFirst,
       );
+    } else if (mounted) {
+       final error = context.read<CartProvider>().checkoutError;
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+           content: Text(
+             error ?? 'Une erreur est survenue lors de la commande',
+             style: GoogleFonts.outfit(color: Colors.white),
+           ),
+           backgroundColor: Colors.red,
+         ),
+       );
     }
   }
 

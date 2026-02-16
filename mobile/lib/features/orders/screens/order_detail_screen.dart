@@ -37,6 +37,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final order = widget.order;
+    print('OrderDetailScreen: Building for order ${order.id}, sellerView: ${widget.isSellerView}');
     return Scaffold(
       backgroundColor: const Color(0xFFFBFBFB),
       appBar: AppBar(
@@ -53,6 +54,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             _buildOrderHeader(order),
             if (widget.isSellerView) ...[
               const SizedBox(height: 25),
+              _buildBuyerSection(order),
+              const SizedBox(height: 25),
               _buildStatusPicker(),
             ] else ...[
               const SizedBox(height: 25),
@@ -67,6 +70,58 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             const SizedBox(height: 40),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildBuyerSection(Order order) {
+    return FadeInUp(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('INFORMATIONS CLIENT', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w900, color: const Color(0xFF0B1C2D), letterSpacing: 1)),
+          const SizedBox(height: 15),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.grey[100]!),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 25,
+                  backgroundColor: const Color(0xFFC9A24D).withOpacity(0.1),
+                  backgroundImage: (order.buyerAvatar != null && order.buyerAvatar!.isNotEmpty)
+                      ? NetworkImage(order.buyerAvatar!.startsWith('http') ? order.buyerAvatar! : '${ApiConstants.baseUrl.replaceAll('/api', '')}/${order.buyerAvatar}')
+                      : null,
+                  child: (order.buyerAvatar == null || order.buyerAvatar!.isEmpty)
+                      ? Text(order.buyerName?.substring(0, 1).toUpperCase() ?? '?', style: const TextStyle(color: Color(0xFFC9A24D), fontWeight: FontWeight.bold))
+                      : null,
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(order.buyerName ?? 'Client inconnu', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16)),
+                      const SizedBox(height: 2),
+                      Text('Acheteur', style: GoogleFonts.outfit(color: Colors.grey, fontSize: 13)),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chat_bubble_outline, color: Color(0xFFC9A24D)),
+                  onPressed: () {
+                    // TODO: Navigate to chat
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Messagerie bientôt disponible')));
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

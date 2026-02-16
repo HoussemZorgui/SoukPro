@@ -9,6 +9,7 @@ import '../providers/product_provider.dart';
 import '../widgets/product_card.dart';
 import 'add_product_screen.dart';
 import '../../../core/constants/api_constants.dart';
+import '../../../core/utils/responsive.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String _selectedCategory = 'All';
+  String _selectedCategory = 'Tout';
   int _currentBannerIndex = 0;
 
   @override
@@ -31,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _filterByCategory(String category) {
     setState(() => _selectedCategory = category);
-    if (category == 'All') {
+    if (category == 'Tout') {
        Provider.of<ProductProvider>(context, listen: false).fetchProducts();
     } else {
        Provider.of<ProductProvider>(context, listen: false).searchProducts('', category: category);
@@ -54,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.transparent,
       body: CustomScrollView(
         slivers: [
-          // Jumia-style Banner / Carousel
+          // Banner Section
           SliverToBoxAdapter(
             child: FadeInDown(
               child: Padding(
@@ -63,13 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     CarouselSlider(
                       options: CarouselOptions(
-                        height: 190.0,
+                        height: Responsive.getHeight(context, 22),
                         autoPlay: true,
                         enlargeCenterPage: true,
                         aspectRatio: 16/9,
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        enableInfiniteScroll: true,
-                        autoPlayAnimationDuration: const Duration(milliseconds: 800),
                         viewportFraction: 0.88,
                         onPageChanged: (index, reason) {
                           setState(() => _currentBannerIndex = index);
@@ -77,18 +75,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       items: [
                         _buildBannerItem(
+                          context: context,
                           color: const Color(0xFF0B1C2D), 
                           title: 'Spécial Ramadan', 
                           subtitle: 'Jusqu\'à -50% sur l\'Électronique',
                           icon: Icons.flash_on,
                         ),
                         _buildBannerItem(
+                          context: context,
                           color: const Color(0xFFC9A24D), 
                           title: 'Nouvelles Collections', 
-                          subtitle: 'Découvrez les dernières tendances Mode',
+                          subtitle: 'Dernières tendances Mode',
                           icon: Icons.shopping_bag,
                         ),
                         _buildBannerItem(
+                          context: context,
                           color: Colors.blueAccent, 
                           title: 'Artisanat Local', 
                           subtitle: 'Soutenez les artisans tunisiens',
@@ -120,12 +121,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Gold Circle Categories
+          // Categories List
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: SizedBox(
-                height: 110,
+                height: Responsive.getHeight(context, 12) + 20, // Adjust height
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -133,18 +134,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (ctx, i) {
                     final cat = categories[i];
                     final isSelected = _selectedCategory == cat['name'];
+                    double circleSize = Responsive.getWidth(context, 15);
+                    if (circleSize > 70) circleSize = 70;
+                    if (circleSize < 50) circleSize = 50;
+
                     return ZoomIn(
                       delay: Duration(milliseconds: i * 100),
                       child: GestureDetector(
                         onTap: () => _filterByCategory(cat['name'] as String),
                         child: Container(
-                          width: 80,
+                          width: circleSize + 15,
                           margin: const EdgeInsets.only(right: 15),
                           child: Column(
                             children: [
                               Container(
-                                width: 70,
-                                height: 70,
+                                width: circleSize,
+                                height: circleSize,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: isSelected ? const Color(0xFFC9A24D) : Colors.white,
@@ -163,14 +168,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Icon(
                                   cat['icon'] as IconData, 
                                   color: isSelected ? Colors.white : const Color(0xFFC9A24D),
-                                  size: 30,
+                                  size: circleSize * 0.45,
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 cat['name'] as String,
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: Responsive.getFontSize(context, 11),
                                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                                   color: isSelected ? const Color(0xFFC9A24D) : Colors.grey[700],
                                 ),
@@ -187,91 +193,38 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Trending Section Header
+          // Section Headers and Grid
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                   const Text(
+                   Text(
                     'PRODUITS TENDANCE',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1.5, color: Color(0xFF1E293B)),
+                    style: TextStyle(
+                      fontSize: Responsive.getFontSize(context, 18), 
+                      fontWeight: FontWeight.w900, 
+                      letterSpacing: 1.5, 
+                      color: const Color(0xFF1E293B)
+                    ),
                   ),
                   TextButton(
                     onPressed: () {},
-                    child: const Text('Voir tout', style: TextStyle(color: Color(0xFFC9A24D), fontWeight: FontWeight.bold)),
+                    child: Text(
+                      'Voir tout', 
+                      style: TextStyle(
+                        color: const Color(0xFFC9A24D), 
+                        fontWeight: FontWeight.bold,
+                        fontSize: Responsive.getFontSize(context, 14)
+                      )
+                    ),
                   ),
                 ],
               ),
             ),
           ),
 
-          // Trending Horizontal Skeletons
-          SliverToBoxAdapter(
-            child: SizedBox(
-               height: 220,
-               child: ListView.builder(
-                 scrollDirection: Axis.horizontal,
-                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                 itemCount: 5,
-                 itemBuilder: (ctx, i) {
-                    return _buildTrendingSkeleton();
-                 },
-               ),
-            ),
-          ),
-
-          // Limited Offers Section
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20, top: 30, bottom: 10),
-              child: Row(
-                children: [
-                   Container(
-                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                     decoration: BoxDecoration(
-                       color: Colors.redAccent,
-                       borderRadius: BorderRadius.circular(5),
-                     ),
-                     child: const Icon(Icons.flash_on, color: Colors.white, size: 16),
-                   ),
-                   const SizedBox(width: 8),
-                   const Text(
-                    'OFFRES LIMITÉES',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1.5, color: Color(0xFF1E293B)),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Limited Horizontal List (Skeletons)
-          SliverToBoxAdapter(
-            child: SizedBox(
-               height: 180,
-               child: ListView.builder(
-                 scrollDirection: Axis.horizontal,
-                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                 itemCount: 5,
-                 itemBuilder: (ctx, i) {
-                    return _buildTrendingSkeleton(); // Reuse trending skeleton for consistency or create simpler one
-                 },
-               ),
-            ),
-          ),
-
-          // Explore All Title
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 25),
-              child: Text(
-                'EXPLORER LES COLLECTIONS',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1.5, color: Color(0xFF1E293B)),
-              ),
-            ),
-          ),
-          
           // Product Grid
           Consumer<ProductProvider>(
             builder: (context, productProvider, child) {
@@ -351,7 +304,14 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: const Color(0xFF0B1C2D),
               elevation: 10,
               icon: const Icon(Icons.add_circle_outline, color: Colors.white),
-              label: const Text('Vendre', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              label: Text(
+                'Vendre', 
+                style: TextStyle(
+                  color: Colors.white, 
+                  fontWeight: FontWeight.bold,
+                  fontSize: Responsive.getFontSize(context, 14)
+                )
+              ),
             )
           : null,
     );
@@ -385,8 +345,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
-  Widget _buildBannerItem({required Color color, required String title, required String subtitle, required IconData icon}) {
+  Widget _buildBannerItem({
+    required BuildContext context,
+    required Color color, 
+    required String title, 
+    required String subtitle, 
+    required IconData icon
+  }) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25),
@@ -407,31 +372,6 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(25),
         child: Stack(
           children: [
-            // Decorative Background Circles
-            Positioned(
-              top: -30,
-              right: -30,
-              child: Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.1),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -50,
-              left: -20,
-              child: Container(
-                 width: 100,
-                 height: 100,
-                 decoration: BoxDecoration(
-                   shape: BoxShape.circle,
-                   color: Colors.white.withOpacity(0.05),
-                 ),
-              ),
-            ),
             Positioned(
               right: -10,
               bottom: -20,
@@ -449,18 +389,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: const Text(
+                    child: Text(
                       'EXCLUSIF',
-                      style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                      style: TextStyle(
+                        color: Colors.white, 
+                        fontSize: Responsive.getFontSize(context, 9), 
+                        fontWeight: FontWeight.w900, 
+                        letterSpacing: 0.5
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Flexible(
                     child: Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white, 
-                        fontSize: 20, 
+                        fontSize: Responsive.getFontSize(context, 20), 
                         fontWeight: FontWeight.w900,
                         height: 1.1,
                       ),
@@ -471,31 +416,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9), 
+                      fontSize: Responsive.getFontSize(context, 13), 
+                      fontWeight: FontWeight.w500
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 12),
-                  // Glassmorphism-style button
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           'Acheter',
-                          style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 12),
+                          style: TextStyle(
+                            color: color, 
+                            fontWeight: FontWeight.w900, 
+                            fontSize: Responsive.getFontSize(context, 12)
+                          ),
                         ),
                         const SizedBox(width: 6),
                         Icon(Icons.arrow_forward_ios, color: color, size: 10),

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile/core/models/user.dart';
 import '../services/auth_service.dart';
+import '../../../../core/services/notification_service.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -43,8 +44,13 @@ class AuthProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return true;
-    } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception: ', '');
+    } on Exception catch (e) {
+      String errMsg = e.toString().replaceAll('Exception: ', '');
+      if (errMsg.contains('pas encore vérifié')) {
+         _errorMessage = 'VERIFY_REQUIRED';
+      } else {
+         _errorMessage = errMsg;
+      }
       _isLoading = false;
       notifyListeners();
       return false;
@@ -102,8 +108,44 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final data = await _authService.register(name, email, password, role);
+      await _authService.register(name, email, password, role);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> verifyCode(String email, String code) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final data = await _authService.verifyCode(email, code);
       _user = User.fromJson(data['user']);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> resendCode(String email) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _authService.resendCode(email);
       _isLoading = false;
       notifyListeners();
       return true;
@@ -152,6 +194,10 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
+    // Clear FCM Token from server
+    final notificationService = NotificationService();
+    await notificationService.removeFcmToken();
+
     await _authService.deleteToken();
     _user = null;
     notifyListeners();

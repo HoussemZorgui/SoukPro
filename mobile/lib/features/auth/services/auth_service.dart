@@ -80,15 +80,41 @@ class AuthService {
         'role': role,
       });
 
-      if (response.statusCode == 200) {
-        final token = response.data['token'];
-        await saveToken(token);
-        return response.data;
-      } else {
-        throw Exception('Registration failed');
-      }
+      return response.data;
     } on DioException catch (e) {
       throw Exception(e.response?.data['msg'] ?? 'Registration failed');
+    }
+  }
+
+  Future<Map<String, dynamic>> verifyCode(String email, String code) async {
+    try {
+      final response = await _dio.post('/auth/verify-code', data: {
+        'email': email,
+        'code': code,
+      });
+
+      if (response.statusCode == 200) {
+        final token = response.data['token'];
+        if (token != null) {
+          await saveToken(token);
+        }
+        return response.data;
+      } else {
+        throw Exception('Verification failed');
+      }
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['msg'] ?? 'Verification failed');
+    }
+  }
+
+  Future<Map<String, dynamic>> resendCode(String email) async {
+    try {
+      final response = await _dio.post('/auth/resend-code', data: {
+        'email': email,
+      });
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['msg'] ?? 'Resend failed');
     }
   }
 

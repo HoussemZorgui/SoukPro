@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 // @access  Private
 exports.createProduct = async (req, res) => {
     try {
-        const { title, description, price, category, condition, type, auctionEndDate, startingBid, isPremium, paymentType, installmentOptions } = req.body;
+        const { title, description, price, category, condition, type, auctionEndDate, startingBid, isPremium, paymentType, installmentOptions, stock } = req.body;
 
         // Handle image uploads
         let images = [];
@@ -30,8 +30,9 @@ exports.createProduct = async (req, res) => {
             images,
             category,
             condition,
+            stock: stock || 1,
             type: type || 'fixed',
-            paymentType: paymentType || 'cash',
+            paymentType: Array.isArray(paymentType) ? paymentType : (paymentType ? [paymentType] : ['cash']),
             installmentOptions: parsedInstallmentOptions,
             auctionEndDate: type === 'auction' ? auctionEndDate : null,
             startingBid: type === 'auction' ? startingBid : null,
