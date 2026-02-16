@@ -2,7 +2,7 @@
 
 # 🛍️ SoukPro
 
-### Plateforme E-Commerce Moderne & Marketplace Multi-Vendeurs
+### Modern E-Commerce Platform & Multi-Vendor Marketplace
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.7.2-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
@@ -10,142 +10,142 @@
 [![Express](https://img.shields.io/badge/Express-5.2.1-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com)
 [![Firebase](https://img.shields.io/badge/Firebase-3.10.1-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com)
 
-*Une solution complète de commerce électronique avec application mobile Flutter et API REST Node.js*
+*A complete e-commerce solution with Flutter mobile app and Node.js REST API*
 
-[Fonctionnalités](#-fonctionnalités-principales) • [Architecture](#-architecture) • [Installation](#-installation) • [Documentation](#-documentation-technique)
+[Features](#-key-features) • [Architecture](#-architecture) • [Installation](#-installation) • [Documentation](#-technical-documentation)
 
 ---
 
 </div>
 
-## 📋 Table des Matières
+## 📋 Table of Contents
 
-- [Vue d'Ensemble](#-vue-densemble)
-- [Fonctionnalités Principales](#-fonctionnalités-principales)
+- [Overview](#-overview)
+- [Key Features](#-key-features)
 - [Architecture](#-architecture)
-- [Stack Technologique](#-stack-technologique)
-- [Structure du Projet](#-structure-du-projet)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
 - [Installation](#-installation)
 - [Configuration](#-configuration)
-- [Documentation Technique](#-documentation-technique)
+- [Technical Documentation](#-technical-documentation)
 - [API Endpoints](#-api-endpoints)
-- [Modèles de Données](#-modèles-de-données)
-- [Sécurité](#-sécurité)
-- [Déploiement](#-déploiement)
+- [Data Models](#-data-models)
+- [Security](#-security)
+- [Deployment](#-deployment)
 
 ---
 
-## 🎯 Vue d'Ensemble
+## 🎯 Overview
 
-**SoukPro** est une plateforme e-commerce complète qui permet aux utilisateurs d'acheter et de vendre des produits, avec des fonctionnalités avancées telles que :
+**SoukPro** is a comprehensive e-commerce platform that enables users to buy and sell products, featuring advanced capabilities such as:
 
-- 🏪 **Marketplace Multi-Vendeurs** : Utilisateurs et professionnels peuvent vendre
-- 🎯 **Ventes aux Enchères** : Système d'enchères en temps réel avec WebSocket
-- 💳 **Paiements Flexibles** : Paiement comptant, à tempérament, ou à la livraison
-- 🔐 **Authentification Avancée** : Email/mot de passe, Google OAuth, vérification KYC
-- 📱 **Application Mobile Native** : Interface Flutter moderne et réactive
-- 🔔 **Notifications Push** : Firebase Cloud Messaging pour les mises à jour en temps réel
-- 🛒 **Gestion Complète des Commandes** : Suivi de bout en bout avec statuts multiples
-- ⭐ **Système d'Avis** : Évaluations et commentaires sur les produits
-- 🏢 **Gestion de Boutiques** : Profils professionnels avec statistiques
+- 🏪 **Multi-Vendor Marketplace**: Both regular users and professionals can sell
+- 🎯 **Real-Time Auctions**: Live bidding system with WebSocket technology
+- 💳 **Flexible Payments**: Cash, installment plans, or cash on delivery
+- 🔐 **Advanced Authentication**: Email/password, Google OAuth, KYC verification
+- 📱 **Native Mobile App**: Modern and responsive Flutter interface
+- 🔔 **Push Notifications**: Firebase Cloud Messaging for real-time updates
+- 🛒 **Complete Order Management**: End-to-end tracking with multiple statuses
+- ⭐ **Review System**: Product ratings and comments
+- 🏢 **Shop Management**: Professional profiles with analytics
 
 ---
 
-## ✨ Fonctionnalités Principales
+## ✨ Key Features
 
-### 👥 Gestion des Utilisateurs
+### 👥 User Management
 
-- **Inscription/Connexion Multi-Canal**
-  - Email et mot de passe avec validation
+- **Multi-Channel Registration/Login**
+  - Email and password with validation
   - Google OAuth 2.0
-  - Vérification par code email (Brevo)
+  - Email verification code (Brevo)
   
-- **Rôles et Permissions**
-  - `user` : Utilisateur standard (peut vendre et acheter)
-  - `professional` : Vendeur professionnel avec boutique
-  - `admin` : Administrateur avec accès complet
+- **Roles & Permissions**
+  - `user`: Standard user (can buy and sell)
+  - `professional`: Professional seller with shop
+  - `admin`: Administrator with full access
   
-- **Profil Utilisateur**
-  - Avatar personnalisable
-  - Adresses de livraison multiples
-  - Historique des commandes
-  - Gestion KYC (Know Your Customer)
+- **User Profile**
+  - Customizable avatar
+  - Multiple shipping addresses
+  - Order history
+  - KYC (Know Your Customer) management
 
-### 🛍️ Catalogue Produits
+### 🛍️ Product Catalog
 
-- **Types de Produits**
-  - Vente à prix fixe
-  - Vente aux enchères en temps réel
+- **Product Types**
+  - Fixed price sales
+  - Real-time auctions
   
-- **Caractéristiques Produits**
-  - Images multiples
-  - Catégorisation
-  - État du produit (Neuf, Occasion)
-  - Gestion de stock
-  - Options de paiement (comptant, tempérament)
-  - Produits premium (mise en avant)
+- **Product Features**
+  - Multiple images
+  - Categorization
+  - Product condition (New, Used)
+  - Stock management
+  - Payment options (cash, installments)
+  - Premium products (featured)
 
-### 🎯 Système d'Enchères
+### 🎯 Auction System
 
-- **Enchères en Temps Réel**
-  - WebSocket (Socket.IO) pour les mises à jour instantanées
-  - Enchères automatiques
-  - Notifications push pour les surenchères
-  - Date de fin automatique
-  - Historique des enchères
+- **Real-Time Bidding**
+  - WebSocket (Socket.IO) for instant updates
+  - Automatic bidding
+  - Push notifications for outbids
+  - Automatic end date
+  - Bid history
 
-### 🛒 Panier & Commandes
+### 🛒 Cart & Orders
 
-- **Panier Intelligent**
-  - Gestion multi-vendeurs
-  - Calcul automatique des totaux
-  - Persistance locale
+- **Smart Cart**
+  - Multi-vendor management
+  - Automatic total calculation
+  - Local persistence
   
-- **Gestion des Commandes**
-  - Statuts : Pending, Confirmed, Shipped, Delivered, Cancelled
-  - Paiement : Click to Pay, Flouci, Cash on Delivery
-  - Suivi de livraison
-  - Notifications à chaque étape
+- **Order Management**
+  - Statuses: Pending, Confirmed, Shipped, Delivered, Cancelled
+  - Payment: Click to Pay, Flouci, Cash on Delivery
+  - Delivery tracking
+  - Notifications at each stage
 
-### 🏪 Boutiques Professionnelles
+### 🏪 Professional Shops
 
-- **Profil Boutique**
-  - Nom, description, logo
-  - Coordonnées et localisation (Mapbox)
-  - Horaires d'ouverture
-  - Catégories de produits
+- **Shop Profile**
+  - Name, description, logo
+  - Contact info and location (Mapbox)
+  - Opening hours
+  - Product categories
   
-- **Statistiques**
-  - Nombre de produits
-  - Évaluations moyennes
-  - Ventes totales
+- **Analytics**
+  - Product count
+  - Average ratings
+  - Total sales
 
-### ⭐ Avis & Évaluations
+### ⭐ Reviews & Ratings
 
-- **Système de Reviews**
-  - Notes de 1 à 5 étoiles
-  - Commentaires textuels
-  - Vérification achat (seuls les acheteurs peuvent noter)
-  - Moyenne des notes par produit
+- **Review System**
+  - 1 to 5 star ratings
+  - Text comments
+  - Purchase verification (only buyers can rate)
+  - Average rating per product
 
 ### 🔔 Notifications
 
 - **Push Notifications (Firebase)**
-  - Nouvelles commandes
-  - Changements de statut
-  - Surenchères
-  - Messages système
+  - New orders
+  - Status changes
+  - Outbids
+  - System messages
   
-- **Notifications In-App**
-  - Centre de notifications
-  - Marquage lu/non lu
-  - Historique complet
+- **In-App Notifications**
+  - Notification center
+  - Read/unread marking
+  - Complete history
 
 ---
 
 ## 🏗️ Architecture
 
-### Architecture Globale
+### Global Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -188,153 +188,152 @@
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Architecture Backend (MVC Pattern)
+### Backend Architecture (MVC Pattern)
 
 ```
 backend/
-├── models/          → Schémas MongoDB (Mongoose)
-├── controllers/     → Logique métier
-├── routes/          → Définition des endpoints
-├── middleware/      → Auth, validation, error handling
-├── services/        → Services externes (Firebase, Email)
-├── utils/           → Fonctions utilitaires
-├── config/          → Configuration DB
-└── server.js        → Point d'entrée
+├── models/          → MongoDB Schemas (Mongoose)
+├── controllers/     → Business Logic
+├── routes/          → Endpoint Definitions
+├── middleware/      → Auth, Validation, Error Handling
+├── services/        → External Services (Firebase, Email)
+├── utils/           → Utility Functions
+├── config/          → Database Configuration
+└── server.js        → Entry Point
 ```
 
-### Architecture Mobile (Feature-First)
+### Mobile Architecture (Feature-First)
 
 ```
 mobile/lib/
 ├── core/
-│   ├── constants/   → Constantes globales
-│   ├── models/      → Modèles de données
-│   ├── services/    → Services API
-│   ├── theme/       → Thème et styles
-│   ├── utils/       → Utilitaires
-│   └── widgets/     → Widgets réutilisables
+│   ├── constants/   → Global Constants
+│   ├── models/      → Data Models
+│   ├── services/    → API Services
+│   ├── theme/       → Theme & Styles
+│   ├── utils/       → Utilities
+│   └── widgets/     → Reusable Widgets
 └── features/
-    ├── auth/        → Authentification
-    ├── home/        → Page d'accueil
-    ├── shop/        → Boutique et produits
-    ├── cart/        → Panier
-    ├── orders/      → Commandes
-    └── profile/     → Profil utilisateur
+    ├── auth/        → Authentication
+    ├── home/        → Home Page
+    ├── shop/        → Shop & Products
+    ├── cart/        → Shopping Cart
+    ├── orders/      → Orders
+    └── profile/     → User Profile
 ```
 
 ---
 
-## 🚀 Stack Technologique
+## 🚀 Tech Stack
 
 ### 📱 Mobile (Flutter)
 
-| Technologie | Version | Usage |
+| Technology | Version | Usage |
 |------------|---------|-------|
-| **Flutter SDK** | 3.7.2 | Framework mobile cross-platform |
-| **Dart** | ^3.7.2 | Langage de programmation |
+| **Flutter SDK** | 3.7.2 | Cross-platform mobile framework |
+| **Dart** | ^3.7.2 | Programming language |
 | **Provider** | 6.1.5 | State management |
-| **Dio** | 5.9.1 | Client HTTP |
-| **Firebase Core** | 3.10.1 | Services Firebase |
+| **Dio** | 5.9.1 | HTTP client |
+| **Firebase Core** | 3.10.1 | Firebase services |
 | **Firebase Messaging** | 15.2.2 | Push notifications |
-| **Google Sign In** | 6.2.1 | Authentification Google |
-| **Shared Preferences** | 2.5.3 | Stockage local |
-| **Flutter Secure Storage** | 10.0.0 | Stockage sécurisé (tokens) |
-| **Google Fonts** | 6.3.2 | Typographies personnalisées |
+| **Google Sign In** | 6.2.1 | Google authentication |
+| **Shared Preferences** | 2.5.3 | Local storage |
+| **Flutter Secure Storage** | 10.0.0 | Secure storage (tokens) |
+| **Google Fonts** | 6.3.2 | Custom typography |
 | **Animate Do** | 4.2.0 | Animations |
-| **Image Picker** | 1.2.1 | Sélection d'images |
-| **FL Chart** | 1.1.0 | Graphiques et statistiques |
-| **Intl** | 0.20.2 | Internationalisation |
-| **Carousel Slider Plus** | 7.1.1 | Carrousels d'images |
-| **Mapbox Maps Flutter** | 2.18.0 | Cartes interactives |
-| **Flutter Map** | 8.2.2 | Cartes alternatives |
-| **Shimmer** | 3.0.0 | Effets de chargement |
-| **Socket.IO Client** | (via Dio) | WebSocket pour enchères |
+| **Image Picker** | 1.2.1 | Image selection |
+| **FL Chart** | 1.1.0 | Charts and analytics |
+| **Intl** | 0.20.2 | Internationalization |
+| **Carousel Slider Plus** | 7.1.1 | Image carousels |
+| **Mapbox Maps Flutter** | 2.18.0 | Interactive maps |
+| **Flutter Map** | 8.2.2 | Alternative maps |
+| **Shimmer** | 3.0.0 | Loading effects |
 
 ### 🔧 Backend (Node.js)
 
-| Technologie | Version | Usage |
+| Technology | Version | Usage |
 |------------|---------|-------|
-| **Node.js** | 18.x+ | Runtime JavaScript |
-| **Express** | 5.2.1 | Framework web |
-| **MongoDB** | Atlas | Base de données NoSQL |
-| **Mongoose** | 9.1.5 | ODM MongoDB |
-| **JWT** | 9.0.3 | Authentification par tokens |
-| **bcryptjs** | 3.0.3 | Hachage de mots de passe |
-| **Socket.IO** | 4.8.3 | WebSocket temps réel |
-| **Multer** | 2.0.2 | Upload de fichiers |
+| **Node.js** | 18.x+ | JavaScript runtime |
+| **Express** | 5.2.1 | Web framework |
+| **MongoDB** | Atlas | NoSQL database |
+| **Mongoose** | 9.1.5 | MongoDB ODM |
+| **JWT** | 9.0.3 | Token authentication |
+| **bcryptjs** | 3.0.3 | Password hashing |
+| **Socket.IO** | 4.8.3 | Real-time WebSocket |
+| **Multer** | 2.0.2 | File uploads |
 | **CORS** | 2.8.6 | Cross-Origin Resource Sharing |
-| **dotenv** | 17.2.3 | Variables d'environnement |
-| **Firebase Admin** | 13.6.1 | Firebase côté serveur |
-| **Google Auth Library** | 10.5.0 | OAuth Google |
-| **Brevo** | 3.0.1 | Service d'emailing |
-| **Nodemon** | 3.1.11 | Auto-reload en développement |
+| **dotenv** | 17.2.3 | Environment variables |
+| **Firebase Admin** | 13.6.1 | Firebase server-side |
+| **Google Auth Library** | 10.5.0 | Google OAuth |
+| **Brevo** | 3.0.1 | Email service |
+| **Nodemon** | 3.1.11 | Auto-reload in development |
 
-### ☁️ Services Cloud & Externes
+### ☁️ Cloud & External Services
 
-- **MongoDB Atlas** : Base de données cloud
-- **Firebase** : Authentication, Cloud Messaging, Admin SDK
-- **Google Cloud** : OAuth 2.0
-- **Brevo (Sendinblue)** : Service d'emailing transactionnel
-- **Mapbox** : Cartes et géolocalisation
+- **MongoDB Atlas**: Cloud database
+- **Firebase**: Authentication, Cloud Messaging, Admin SDK
+- **Google Cloud**: OAuth 2.0
+- **Brevo (Sendinblue)**: Transactional email service
+- **Mapbox**: Maps and geolocation
 
 ---
 
-## 📁 Structure du Projet
+## 📁 Project Structure
 
 ### Backend Structure
 
 ```
 backend/
 ├── config/
-│   └── db.js                    # Configuration MongoDB
+│   └── db.js                    # MongoDB configuration
 ├── controllers/
-│   ├── authController.js        # Authentification
-│   ├── productController.js     # Gestion produits
-│   ├── orderController.js       # Gestion commandes
-│   ├── shopController.js        # Gestion boutiques
-│   ├── userController.js        # Gestion utilisateurs
-│   ├── reviewController.js      # Avis produits
-│   ├── auctionController.js     # Enchères
+│   ├── authController.js        # Authentication
+│   ├── productController.js     # Product management
+│   ├── orderController.js       # Order management
+│   ├── shopController.js        # Shop management
+│   ├── userController.js        # User management
+│   ├── reviewController.js      # Product reviews
+│   ├── auctionController.js     # Auctions
 │   └── notificationController.js # Notifications
 ├── middleware/
-│   ├── auth.js                  # Middleware JWT
-│   └── roleCheck.js             # Vérification des rôles
+│   ├── auth.js                  # JWT middleware
+│   └── roleCheck.js             # Role verification
 ├── models/
-│   ├── User.js                  # Schéma utilisateur
-│   ├── Product.js               # Schéma produit
-│   ├── Order.js                 # Schéma commande
-│   ├── Shop.js                  # Schéma boutique
-│   ├── Review.js                # Schéma avis
-│   ├── Auction.js               # Schéma enchère
-│   └── Notification.js          # Schéma notification
+│   ├── User.js                  # User schema
+│   ├── Product.js               # Product schema
+│   ├── Order.js                 # Order schema
+│   ├── Shop.js                  # Shop schema
+│   ├── Review.js                # Review schema
+│   ├── Auction.js               # Auction schema
+│   └── Notification.js          # Notification schema
 ├── routes/
-│   ├── auth.js                  # Routes authentification
-│   ├── products.js              # Routes produits
-│   ├── orders.js                # Routes commandes
-│   ├── shops.js                 # Routes boutiques
-│   ├── users.js                 # Routes utilisateurs
-│   ├── reviews.js               # Routes avis
-│   ├── auctions.js              # Routes enchères
-│   └── notifications.js         # Routes notifications
+│   ├── auth.js                  # Auth routes
+│   ├── products.js              # Product routes
+│   ├── orders.js                # Order routes
+│   ├── shops.js                 # Shop routes
+│   ├── users.js                 # User routes
+│   ├── reviews.js               # Review routes
+│   ├── auctions.js              # Auction routes
+│   └── notifications.js         # Notification routes
 ├── services/
-│   └── firebaseService.js       # Service Firebase
+│   └── firebaseService.js       # Firebase service
 ├── utils/
-│   └── emailService.js          # Service email
-├── uploads/                     # Fichiers uploadés
-├── .env                         # Variables d'environnement
-├── firebase-service-account.json # Clés Firebase
-├── package.json                 # Dépendances npm
-└── server.js                    # Point d'entrée
+│   └── emailService.js          # Email service
+├── uploads/                     # Uploaded files
+├── .env                         # Environment variables
+├── firebase-service-account.json # Firebase keys
+├── package.json                 # npm dependencies
+└── server.js                    # Entry point
 ```
 
 ### Mobile Structure
 
 ```
 mobile/
-├── android/                     # Configuration Android
-├── ios/                         # Configuration iOS
+├── android/                     # Android configuration
+├── ios/                         # iOS configuration
 ├── assets/
-│   └── images/                  # Images et logos
+│   └── images/                  # Images and logos
 ├── lib/
 │   ├── core/
 │   │   ├── constants/
@@ -406,8 +405,8 @@ mobile/
 │           └── screens/
 │               ├── profile_screen.dart
 │               └── edit_profile_screen.dart
-│   └── main.dart                # Point d'entrée
-├── pubspec.yaml                 # Dépendances Flutter
+│   └── main.dart                # Entry point
+├── pubspec.yaml                 # Flutter dependencies
 └── README.md
 ```
 
@@ -415,58 +414,58 @@ mobile/
 
 ## 🔧 Installation
 
-### Prérequis
+### Prerequisites
 
-- **Node.js** 18.x ou supérieur
-- **npm** ou **yarn**
-- **Flutter SDK** 3.7.2 ou supérieur
-- **MongoDB Atlas** compte (ou MongoDB local)
-- **Firebase** projet configuré
-- **Android Studio** / **Xcode** (pour émulateurs)
+- **Node.js** 18.x or higher
+- **npm** or **yarn**
+- **Flutter SDK** 3.7.2 or higher
+- **MongoDB Atlas** account (or local MongoDB)
+- **Firebase** project configured
+- **Android Studio** / **Xcode** (for emulators)
 
-### 1️⃣ Installation Backend
+### 1️⃣ Backend Installation
 
 ```bash
-# Cloner le repository
+# Clone the repository
 git clone <repository-url>
 cd SoukPro/backend
 
-# Installer les dépendances
+# Install dependencies
 npm install
 
-# Créer le fichier .env (voir Configuration)
+# Create .env file (see Configuration)
 cp .env.example .env
 
-# Ajouter firebase-service-account.json
-# (Télécharger depuis Firebase Console)
+# Add firebase-service-account.json
+# (Download from Firebase Console)
 
-# Démarrer le serveur en mode développement
+# Start server in development mode
 npm run dev
 
-# Ou en mode production
+# Or in production mode
 npm start
 ```
 
-Le serveur démarre sur `http://localhost:5001`
+Server starts on `http://localhost:5001`
 
-### 2️⃣ Installation Mobile
+### 2️⃣ Mobile Installation
 
 ```bash
 cd SoukPro/mobile
 
-# Installer les dépendances Flutter
+# Install Flutter dependencies
 flutter pub get
 
-# Générer les icônes d'application
+# Generate app icons
 flutter pub run flutter_launcher_icons
 
-# Générer le splash screen
+# Generate splash screen
 flutter pub run flutter_native_splash:create
 
-# Lancer sur émulateur/appareil
+# Run on emulator/device
 flutter run
 
-# Ou build pour production
+# Or build for production
 flutter build apk --release  # Android
 flutter build ios --release  # iOS
 ```
@@ -477,7 +476,7 @@ flutter build ios --release  # iOS
 
 ### Backend (.env)
 
-Créer un fichier `.env` dans `/backend/` :
+Create a `.env` file in `/backend/`:
 
 ```env
 # Server
@@ -503,18 +502,18 @@ EMAIL_FROM=your-email@example.com
 
 ### Firebase Configuration
 
-1. **Créer un projet Firebase** sur [Firebase Console](https://console.firebase.google.com)
+1. **Create a Firebase project** on [Firebase Console](https://console.firebase.google.com)
 
-2. **Activer les services** :
+2. **Enable services**:
    - Authentication (Email/Password, Google)
    - Cloud Messaging
 
-3. **Télécharger les fichiers de configuration** :
-   - **Backend** : `firebase-service-account.json` → placer dans `/backend/`
-   - **Mobile Android** : `google-services.json` → placer dans `/mobile/android/app/`
-   - **Mobile iOS** : `GoogleService-Info.plist` → placer dans `/mobile/ios/Runner/`
+3. **Download configuration files**:
+   - **Backend**: `firebase-service-account.json` → place in `/backend/`
+   - **Mobile Android**: `google-services.json` → place in `/mobile/android/app/`
+   - **Mobile iOS**: `GoogleService-Info.plist` → place in `/mobile/ios/Runner/`
 
-4. **Configurer dans le code mobile** :
+4. **Configure in mobile code**:
 
 ```dart
 // mobile/lib/main.dart
@@ -523,41 +522,41 @@ await Firebase.initializeApp();
 
 ### API Base URL (Mobile)
 
-Modifier l'URL de l'API dans :
+Update the API URL in:
 
 ```dart
 // mobile/lib/core/constants/api_constants.dart
 class ApiConstants {
   static const String baseUrl = 'http://YOUR_IP:5001/api';
-  // Pour émulateur Android : http://10.0.2.2:5001/api
-  // Pour appareil physique : http://192.168.x.x:5001/api
+  // For Android emulator: http://10.0.2.2:5001/api
+  // For physical device: http://192.168.x.x:5001/api
 }
 ```
 
 ### MongoDB Atlas
 
-1. Créer un cluster sur [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Créer un utilisateur de base de données
-3. Whitelist votre IP (ou 0.0.0.0/0 pour développement)
-4. Copier la connection string dans `MONGO_URI`
+1. Create a cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a database user
+3. Whitelist your IP (or 0.0.0.0/0 for development)
+4. Copy the connection string to `MONGO_URI`
 
 ---
 
-## 📚 Documentation Technique
+## 📚 Technical Documentation
 
-### Authentification & Sécurité
+### Authentication & Security
 
 #### JWT Token Flow
 
 ```
-1. Login/Register → Server génère JWT
-2. Client stocke token (Flutter Secure Storage)
-3. Chaque requête → Header: Authorization: Bearer <token>
-4. Middleware vérifie token → Extrait user ID
-5. Controller accède à req.user
+1. Login/Register → Server generates JWT
+2. Client stores token (Flutter Secure Storage)
+3. Each request → Header: Authorization: Bearer <token>
+4. Middleware verifies token → Extracts user ID
+5. Controller accesses req.user
 ```
 
-#### Middleware d'Authentification
+#### Authentication Middleware
 
 ```javascript
 // backend/middleware/auth.js
@@ -580,7 +579,7 @@ module.exports = function(req, res, next) {
 };
 ```
 
-#### Vérification des Rôles
+#### Role Verification
 
 ```javascript
 // backend/middleware/roleCheck.js
@@ -597,9 +596,9 @@ module.exports = function(...allowedRoles) {
 };
 ```
 
-### WebSocket (Enchères en Temps Réel)
+### WebSocket (Real-Time Auctions)
 
-#### Configuration Serveur
+#### Server Configuration
 
 ```javascript
 // backend/server.js
@@ -613,14 +612,14 @@ io.on('connection', (socket) => {
   });
 });
 
-// Dans le controller
+// In controller
 io.to(productId).emit('newBid', { currentBid, bidder });
 ```
 
-#### Client Flutter
+#### Flutter Client
 
 ```dart
-// Connexion Socket.IO
+// Socket.IO connection
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 IO.Socket socket = IO.io('http://YOUR_IP:5001', <String, dynamic>{
@@ -631,13 +630,13 @@ IO.Socket socket = IO.io('http://YOUR_IP:5001', <String, dynamic>{
 socket.connect();
 socket.emit('joinAuction', productId);
 socket.on('newBid', (data) {
-  // Mettre à jour l'UI
+  // Update UI
 });
 ```
 
-### Upload de Fichiers
+### File Upload
 
-#### Configuration Multer
+#### Multer Configuration
 
 ```javascript
 // backend/controllers/productController.js
@@ -654,10 +653,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 ```
 
-#### Client Flutter
+#### Flutter Client
 
 ```dart
-// Upload avec Dio
+// Upload with Dio
 FormData formData = FormData.fromMap({
   'title': 'Product Title',
   'price': 100,
@@ -670,7 +669,7 @@ await dio.post('/products', data: formData);
 ### State Management (Provider)
 
 ```dart
-// Exemple: AuthProvider
+// Example: AuthProvider
 class AuthProvider with ChangeNotifier {
   User? _user;
   String? _token;
@@ -708,81 +707,81 @@ class AuthProvider with ChangeNotifier {
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/register` | Inscription utilisateur | ❌ |
-| POST | `/login` | Connexion | ❌ |
-| POST | `/google` | Connexion Google OAuth | ❌ |
-| POST | `/verify` | Vérifier code email | ❌ |
-| POST | `/resend-code` | Renvoyer code | ❌ |
-| GET | `/me` | Obtenir utilisateur actuel | ✅ |
+| POST | `/register` | User registration | ❌ |
+| POST | `/login` | Login | ❌ |
+| POST | `/google` | Google OAuth login | ❌ |
+| POST | `/verify` | Verify email code | ❌ |
+| POST | `/resend-code` | Resend verification code | ❌ |
+| GET | `/me` | Get current user | ✅ |
 
 ### Products (`/api/products`)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/` | Liste tous les produits | ❌ |
-| GET | `/:id` | Détails d'un produit | ❌ |
-| POST | `/` | Créer un produit | ✅ |
-| PUT | `/:id` | Modifier un produit | ✅ |
-| DELETE | `/:id` | Supprimer un produit | ✅ |
-| GET | `/category/:category` | Produits par catégorie | ❌ |
-| GET | `/seller/:sellerId` | Produits d'un vendeur | ❌ |
+| GET | `/` | List all products | ❌ |
+| GET | `/:id` | Product details | ❌ |
+| POST | `/` | Create product | ✅ |
+| PUT | `/:id` | Update product | ✅ |
+| DELETE | `/:id` | Delete product | ✅ |
+| GET | `/category/:category` | Products by category | ❌ |
+| GET | `/seller/:sellerId` | Products by seller | ❌ |
 
 ### Orders (`/api/orders`)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/` | Mes commandes | ✅ |
-| GET | `/:id` | Détails commande | ✅ |
-| POST | `/` | Créer une commande | ✅ |
-| PUT | `/:id/status` | Changer statut | ✅ |
-| GET | `/seller` | Commandes reçues (vendeur) | ✅ |
+| GET | `/` | My orders | ✅ |
+| GET | `/:id` | Order details | ✅ |
+| POST | `/` | Create order | ✅ |
+| PUT | `/:id/status` | Update status | ✅ |
+| GET | `/seller` | Received orders (seller) | ✅ |
 
 ### Shops (`/api/shops`)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/` | Liste boutiques | ❌ |
-| GET | `/:id` | Détails boutique | ❌ |
-| POST | `/` | Créer boutique | ✅ |
-| PUT | `/:id` | Modifier boutique | ✅ |
-| GET | `/my-shop` | Ma boutique | ✅ |
+| GET | `/` | List shops | ❌ |
+| GET | `/:id` | Shop details | ❌ |
+| POST | `/` | Create shop | ✅ |
+| PUT | `/:id` | Update shop | ✅ |
+| GET | `/my-shop` | My shop | ✅ |
 
 ### Reviews (`/api/reviews`)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/product/:productId` | Avis d'un produit | ❌ |
-| POST | `/` | Créer un avis | ✅ |
-| DELETE | `/:id` | Supprimer avis | ✅ |
+| GET | `/product/:productId` | Product reviews | ❌ |
+| POST | `/` | Create review | ✅ |
+| DELETE | `/:id` | Delete review | ✅ |
 
 ### Auctions (`/api/auctions`)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/product/:productId` | Enchères d'un produit | ❌ |
-| POST | `/bid` | Placer une enchère | ✅ |
+| GET | `/product/:productId` | Product auctions | ❌ |
+| POST | `/bid` | Place bid | ✅ |
 
 ### Notifications (`/api/notifications`)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/` | Mes notifications | ✅ |
-| PUT | `/:id/read` | Marquer comme lu | ✅ |
-| POST | `/register-token` | Enregistrer FCM token | ✅ |
+| GET | `/` | My notifications | ✅ |
+| PUT | `/:id/read` | Mark as read | ✅ |
+| POST | `/register-token` | Register FCM token | ✅ |
 
 ### Users (`/api/users`)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/` | Liste utilisateurs | ✅ Admin |
-| GET | `/:id` | Détails utilisateur | ✅ |
-| PUT | `/:id` | Modifier utilisateur | ✅ |
-| DELETE | `/:id` | Supprimer utilisateur | ✅ Admin |
-| POST | `/shipping-address` | Ajouter adresse | ✅ |
+| GET | `/` | List users | ✅ Admin |
+| GET | `/:id` | User details | ✅ |
+| PUT | `/:id` | Update user | ✅ |
+| DELETE | `/:id` | Delete user | ✅ Admin |
+| POST | `/shipping-address` | Add address | ✅ |
 
 ---
 
-## 📊 Modèles de Données
+## 📊 Data Models
 
 ### User
 
@@ -935,63 +934,63 @@ class AuthProvider with ChangeNotifier {
 
 ---
 
-## 🔒 Sécurité
+## 🔒 Security
 
-### Mesures Implémentées
+### Implemented Measures
 
-✅ **Authentification JWT** avec expiration
-✅ **Hachage bcrypt** pour les mots de passe (10 rounds)
-✅ **Validation des entrées** côté serveur
-✅ **CORS** configuré
-✅ **Tokens stockés de manière sécurisée** (Flutter Secure Storage)
-✅ **HTTPS** recommandé en production
-✅ **Rate limiting** (à implémenter)
-✅ **Sanitization** des données MongoDB
+✅ **JWT Authentication** with expiration
+✅ **bcrypt Hashing** for passwords (10 rounds)
+✅ **Input Validation** server-side
+✅ **CORS** configured
+✅ **Secure Token Storage** (Flutter Secure Storage)
+✅ **HTTPS** recommended in production
+✅ **Rate Limiting** (to be implemented)
+✅ **MongoDB Data Sanitization**
 ✅ **Role-Based Access Control** (RBAC)
-✅ **Vérification email** obligatoire
-✅ **KYC** pour les professionnels
+✅ **Email Verification** required
+✅ **KYC** for professionals
 
-### Recommandations Production
+### Production Recommendations
 
-- [ ] Activer HTTPS (Let's Encrypt)
-- [ ] Implémenter rate limiting (express-rate-limit)
-- [ ] Ajouter helmet.js pour headers sécurisés
-- [ ] Configurer MongoDB IP Whitelist
-- [ ] Activer MongoDB encryption at rest
-- [ ] Implémenter refresh tokens
-- [ ] Ajouter monitoring (Sentry, LogRocket)
-- [ ] Configurer backups automatiques
-- [ ] Implémenter CSRF protection
-- [ ] Ajouter validation Joi/Yup
+- [ ] Enable HTTPS (Let's Encrypt)
+- [ ] Implement rate limiting (express-rate-limit)
+- [ ] Add helmet.js for secure headers
+- [ ] Configure MongoDB IP Whitelist
+- [ ] Enable MongoDB encryption at rest
+- [ ] Implement refresh tokens
+- [ ] Add monitoring (Sentry, LogRocket)
+- [ ] Configure automatic backups
+- [ ] Implement CSRF protection
+- [ ] Add Joi/Yup validation
 
 ---
 
-## 🚀 Déploiement
+## 🚀 Deployment
 
 ### Backend (Node.js)
 
 #### Option 1: Heroku
 
 ```bash
-# Installer Heroku CLI
+# Install Heroku CLI
 heroku login
 
-# Créer app
+# Create app
 heroku create soukpro-api
 
-# Configurer variables d'environnement
+# Set environment variables
 heroku config:set MONGO_URI=your_mongo_uri
 heroku config:set JWT_SECRET=your_secret
-# ... autres variables
+# ... other variables
 
-# Déployer
+# Deploy
 git push heroku main
 ```
 
 #### Option 2: DigitalOcean / AWS / GCP
 
 ```bash
-# Sur le serveur
+# On server
 git clone <repo>
 cd backend
 npm install --production
@@ -1026,10 +1025,10 @@ docker run -p 5001:5001 --env-file .env soukpro-api
 # Build release APK
 flutter build apk --release
 
-# Ou App Bundle (recommandé)
+# Or App Bundle (recommended)
 flutter build appbundle --release
 
-# Fichier généré:
+# Generated file:
 # build/app/outputs/bundle/release/app-release.aab
 ```
 
@@ -1039,15 +1038,15 @@ flutter build appbundle --release
 # Build release
 flutter build ios --release
 
-# Ouvrir Xcode
+# Open Xcode
 open ios/Runner.xcworkspace
 
 # Archive → Distribute → App Store Connect
 ```
 
-#### Configuration Signing
+#### Signing Configuration
 
-**Android** : Créer `android/key.properties`
+**Android**: Create `android/key.properties`
 ```properties
 storePassword=<password>
 keyPassword=<password>
@@ -1055,57 +1054,57 @@ keyAlias=upload
 storeFile=<path-to-keystore>
 ```
 
-**iOS** : Configurer dans Xcode
+**iOS**: Configure in Xcode
 - Team
 - Bundle Identifier
 - Provisioning Profile
 
 ---
 
-## 📈 Performances & Optimisations
+## 📈 Performance & Optimizations
 
 ### Backend
 
-- **Indexation MongoDB** sur champs fréquents (email, seller, category)
-- **Pagination** pour les listes (limit/skip)
-- **Caching** (à implémenter avec Redis)
-- **Compression** des réponses (gzip)
-- **CDN** pour les images statiques
+- **MongoDB Indexing** on frequent fields (email, seller, category)
+- **Pagination** for lists (limit/skip)
+- **Caching** (to implement with Redis)
+- **Response Compression** (gzip)
+- **CDN** for static images
 
 ### Mobile
 
-- **Lazy Loading** des images
-- **Pagination** des listes
-- **Caching** local (Shared Preferences)
-- **Optimisation images** (compression)
-- **Code splitting** par feature
-- **Debouncing** pour la recherche
+- **Image Lazy Loading**
+- **List Pagination**
+- **Local Caching** (Shared Preferences)
+- **Image Optimization** (compression)
+- **Code Splitting** by feature
+- **Search Debouncing**
 
 ---
 
-## 🧪 Tests
+## 🧪 Testing
 
 ### Backend
 
 ```bash
-# À implémenter
+# To be implemented
 npm test
 
-# Tests unitaires (Jest)
-# Tests d'intégration (Supertest)
-# Tests E2E
+# Unit tests (Jest)
+# Integration tests (Supertest)
+# E2E tests
 ```
 
 ### Mobile
 
 ```bash
-# Tests unitaires
+# Unit tests
 flutter test
 
-# Tests d'intégration
+# Integration tests
 flutter drive --target=test_driver/app.dart
 
-# Tests widgets
+# Widget tests
 flutter test test/widget_test.dart
 ```
 
@@ -1116,7 +1115,7 @@ flutter test test/widget_test.dart
 ### Backend Logs
 
 ```javascript
-// Utiliser Winston ou Morgan
+// Use Winston or Morgan
 const morgan = require('morgan');
 app.use(morgan('combined'));
 ```
@@ -1132,43 +1131,43 @@ FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
 ---
 
-## 🤝 Contribution
+## 🤝 Contributing
 
-1. Fork le projet
-2. Créer une branche (`git checkout -b feature/AmazingFeature`)
+1. Fork the project
+2. Create a branch (`git checkout -b feature/AmazingFeature`)
 3. Commit (`git commit -m 'Add AmazingFeature'`)
 4. Push (`git push origin feature/AmazingFeature`)
-5. Ouvrir une Pull Request
+5. Open a Pull Request
 
 ---
 
 ## 📄 License
 
-Ce projet est sous licence MIT.
+This project is licensed under the MIT License.
 
 ---
 
-## 👨‍💻 Auteur
+## 👨‍💻 Author
 
 **Houssem Zorgui**
 - Email: houssemzorgui10@gmail.com
-- GitHub: [@houssemzorgui](https://github.com/houssemzorgui)
+- GitHub: [@HoussemZorgui](https://github.com/HoussemZorgui)
 
 ---
 
-## 🙏 Remerciements
+## 🙏 Acknowledgments
 
 - Flutter Team
 - Node.js Community
 - MongoDB
 - Firebase
-- Tous les contributeurs open-source
+- All open-source contributors
 
 ---
 
 <div align="center">
 
-### ⭐ Si ce projet vous a aidé, n'hésitez pas à lui donner une étoile !
+### ⭐ If this project helped you, don't hesitate to give it a star!
 
 **Made with ❤️ by Houssem Zorgui**
 
